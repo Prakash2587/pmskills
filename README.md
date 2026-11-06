@@ -51,7 +51,7 @@ See [`knowledge/`](knowledge/) — every benchmark carries its provenance (`sour
 ### Claude Code
 
 ```bash
-/plugin marketplace add <your-org>/pmskills
+/plugin marketplace add Prakash2587/pmskills
 /plugin install pmskills@pmskills
 ```
 

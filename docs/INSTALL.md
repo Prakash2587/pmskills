@@ -7,7 +7,7 @@ on the agent.
 
 ```bash
 # Add this repo as a plugin marketplace
-/plugin marketplace add <your-org>/pmskills
+/plugin marketplace add Prakash2587/pmskills
 
 # Install the skill pack (one plugin, both skills)
 /plugin install pmskills@pmskills
