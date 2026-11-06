@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PM Skills — Project management skills for AI agents</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0}
+:root{
+  --bg:#fafaf8;--surface:#fff;--text:#1a1a18;--muted:#6b6b65;
+  --border:#e2e0d8;--accent:#1d9e75;--accent-light:#e1f5ee;--accent-dark:#085041;
+  --coral:#d85a30;--coral-light:#faece7;--purple:#534ab7;--purple-light:#eeedfe;
+  --font:Inter,system-ui,sans-serif;--mono:'JetBrains Mono',monospace;--radius:10px;
+}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#161614;--surface:#1e1e1c;--text:#e8e6de;--muted:#9c9a92;
+  --border:#333330;--accent-light:#0a2e23;--coral-light:#2e1a10;--purple-light:#1e1c30;
+  --accent-dark:#7fd9ba;
+}}
+:root[data-theme="dark"]{
+  --bg:#161614;--surface:#1e1e1c;--text:#e8e6de;--muted:#9c9a92;
+  --border:#333330;--accent-light:#0a2e23;--coral-light:#2e1a10;--purple-light:#1e1c30;
+  --accent-dark:#7fd9ba;
+}
+body{font-family:var(--font);color:var(--text);background:var(--bg);line-height:1.65;
+  -webkit-font-smoothing:antialiased}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+.wrap{max-width:760px;margin:0 auto;padding:0 16px}
+
+header{padding:72px 0 44px;text-align:center}
+header h1{font-size:clamp(28px,5vw,42px);font-weight:600;letter-spacing:-.025em;
+  line-height:1.15;margin-bottom:16px}
+header .lede{font-size:17.5px;color:var(--muted);max-width:560px;margin:0 auto 28px}
+.badges{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:28px}
+.badge{font-size:12.5px;font-weight:500;padding:4px 13px;border-radius:20px;
+  border:1px solid var(--border);color:var(--muted)}
+.cta-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;padding:12px 24px;border-radius:var(--radius);
+  font-size:15px;font-weight:500;border:none;cursor:pointer;transition:opacity .13s;
+  font-family:var(--font)}
+.btn:hover{opacity:.86;text-decoration:none}
+.primary{background:var(--accent);color:#fff}
+.ghost{background:var(--surface);color:var(--text);border:1px solid var(--border)}
+
+section{padding:48px 0}
+h2.sh{font-size:22px;font-weight:600;margin-bottom:6px;letter-spacing:-.01em}
+p.sub{color:var(--muted);margin-bottom:26px;font-size:15px}
+
+.thesis{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:28px}
+.thesis h2{font-size:19px;font-weight:600;margin-bottom:10px}
+.thesis p{font-size:14.5px;color:var(--muted);margin-bottom:12px}
+.thesis p:last-child{margin-bottom:0}
+.thesis strong{color:var(--text);font-weight:500}
+.chain{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin:16px 0;
+  font-family:var(--mono);font-size:12.5px}
+.chain span{background:var(--accent-light);color:var(--accent-dark);padding:4px 10px;border-radius:5px}
+.chain i{color:var(--muted);font-style:normal}
+
+.grid{display:grid;gap:12px}
+.sk{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:21px;
+  transition:border-color .13s}
+.sk:hover{border-color:var(--accent)}
+.sk .top{display:flex;align-items:flex-start;gap:10px;justify-content:space-between;margin-bottom:7px}
+.sk h3{font-size:15.5px;font-weight:600}
+.sk p{font-size:13.5px;color:var(--muted);margin-bottom:11px}
+.sk .why{font-size:12.5px;color:var(--muted);border-left:2px solid var(--border);
+  padding-left:11px;margin-bottom:13px}
+.st{font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;
+  padding:3px 9px;border-radius:5px;white-space:nowrap;flex-shrink:0}
+.st-live{background:var(--accent-light);color:var(--accent-dark)}
+.st-next{background:var(--purple-light);color:var(--purple)}
+.st-plan{background:var(--bg);color:var(--muted);border:1px solid var(--border)}
+.acts{display:flex;gap:8px;flex-wrap:wrap}
+.acts a,.acts button{font-size:12.5px;font-weight:500;padding:6px 13px;border-radius:7px;
+  border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer;
+  font-family:var(--font);transition:background .13s}
+.acts a:hover,.acts button:hover{background:var(--accent-light);text-decoration:none}
+
+.box{background:var(--surface);border:1px solid var(--border);border-radius:13px;
+  padding:22px;margin-bottom:12px}
+.box h3{font-size:15px;font-weight:600;margin-bottom:3px}
+.box .who{font-size:13px;color:var(--muted);margin-bottom:14px}
+.box pre{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:13px 16px;
+  font-family:var(--mono);font-size:12.5px;overflow-x:auto;line-height:1.65;margin:0}
+.box ol{padding-left:19px;font-size:13.5px;color:var(--muted);line-height:1.8}
+
+.rigor{background:var(--coral-light);border:1px solid var(--border);border-radius:14px;padding:26px}
+.rigor h2{font-size:18px;font-weight:600;margin-bottom:10px}
+.rigor p{font-size:14px;color:var(--muted);margin-bottom:11px}
+.rigor ul{margin:0 0 11px 17px;font-size:13.5px;color:var(--muted);line-height:1.75}
+.rigor strong{color:var(--text);font-weight:500}
+
+.note{font-size:12.5px;color:var(--muted);text-align:center;margin-top:14px}
+footer{padding:40px 0;border-top:1px solid var(--border);text-align:center;
+  font-size:12.5px;color:var(--muted);line-height:1.8}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--text);
+  color:var(--bg);padding:10px 20px;border-radius:8px;font-size:13px;font-weight:500;
+  opacity:0;transition:opacity .2s;pointer-events:none;z-index:10}
+.toast.on{opacity:1}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>Project management skills for AI agents</h1>
+  <p class="lede">Portable playbooks that teach Claude, ChatGPT and Gemini a specific PM discipline — then show you how to run it for real in Zoho Projects.</p>
+  <div class="badges">
+    <span class="badge">1 skill live</span>
+    <span class="badge">9 planned</span>
+    <span class="badge">Every benchmark sourced</span>
+    <span class="badge">MIT licensed</span>
+  </div>
+  <div class="cta-row">
+    <a href="tools/cost-capacity.html" class="btn primary">Try the assessment</a>
+    <a href="#install" class="btn ghost">Install a skill</a>
+  </div>
+</header>
+
+<section>
+  <div class="thesis">
+    <h2>The gap isn't reporting. It's the join.</h2>
+    <p>We read several hundred threads across the Atlassian, Asana, monday.com, ClickUp and Smartsheet
+       communities, plus Hacker News and practitioner writing, looking for what people actually complain
+       about in project cost and capacity.</p>
+    <p>The same shape came back everywhere. Nobody is asking for a better Gantt chart. They are asking
+       for one thing no tool gives them:</p>
+    <div class="chain">
+      <span>time entries</span><i>&rarr;</i><span>cost rate</span><i>&rarr;</i>
+      <span>budget</span><i>&rarr;</i><span>client</span><i>&rarr;</i><span>across projects</span>
+    </div>
+    <p>So they rebuild it in a spreadsheet. One team embeds a Google Sheet inside their PM tool just to
+       see how much budget is left. <strong>Zoho Projects already holds every side of that join</strong> —
+       logged hours, per-person cost rates, project budget, client, and its own capacity verdict. These
+       skills exist to make that fact useful.</p>
+  </div>
+</section>
+
+<section>
+  <h2 class="sh">Skills</h2>
+  <p class="sub">Ranked by demand evidence, and honest about what exists today.</p>
+
+  <div class="grid">
+
+    <div class="sk">
+      <div class="top"><h3>Cost &amp; capacity optimization</h3><span class="st st-live">Live</span></div>
+      <p>Who is over- and under-loaded, what weekend work is costing, where the budget forecast is
+         heading — and what to change. Reads Zoho's own allocation verdict rather than inventing one.</p>
+      <div class="why">Resource management ranks as the top PMO challenge in survey data, and capacity
+         questions recur across every tool community we sampled.</div>
+      <div class="acts">
+        <a href="tools/cost-capacity.html">Open the tool</a>
+        <button onclick="cp('/plugin install pmskills@pmskills')">Copy install command</button>
+        <a href="skills/cost-capacity-optimization/SKILL.md">Read the skill</a>
+      </div>
+    </div>
+
+    <div class="sk">
+      <div class="top"><h3>Weekly status report</h3><span class="st st-next">Next</span></div>
+      <p>Turns raw project state into a RAG update shaped for whoever reads it. Classifies each task as
+         shipped, in flight, slipped or blocked, and posts to the project feed on approval.</p>
+      <div class="why">The single most recurring theme in PM communities: format, cadence, and the
+         complaint that stakeholders don't read what gets sent.</div>
+      <div class="acts"><button onclick="cp('')" disabled>Not yet published</button></div>
+    </div>
+
+    <div class="sk">
+      <div class="top"><h3>Stale-task chaser</h3><span class="st st-next">Next</span></div>
+      <p>Finds work going quietly sideways — past due and silent, in progress but untouched, stuck
+         waiting — and drafts a peer-tone nudge per owner. Never chases the same person more than
+         five times in a run.</p>
+      <div class="why">Highest value-to-effort ratio of any skill: computable from timestamps alone,
+         with near-zero false-positive risk.</div>
+      <div class="acts"><button disabled>Not yet published</button></div>
+    </div>
+
+    <div class="sk">
+      <div class="top"><h3>Scope &amp; risk delta digest</h3><span class="st st-plan">Planned</span></div>
+      <p>Diffs this week's scope against a stored baseline: work added, dates moved, effort
+         re-estimated, dependencies broken. Each risk rated hard evidence, inference or guess.</p>
+      <div class="why">Scope creep is one of the heaviest recurring complaints, and agencies report
+         absorbing the cost rather than billing it.</div>
+      <div class="acts"><button disabled>Not yet published</button></div>
+    </div>
+
+    <div class="sk">
+      <div class="top"><h3>Dependency &amp; critical path</h3><span class="st st-plan">Planned</span></div>
+      <p>Finds the chain that actually sets your end date, and what it would cost to compress it.</p>
+      <div class="why">Pure graph maths over data every PM tool already holds — and a named gap in
+         vendor community feature requests.</div>
+      <div class="acts"><button disabled>Not yet published</button></div>
+    </div>
+
+    <div class="sk">
+      <div class="top"><h3>Estimate accuracy &amp; forecast</h3><span class="st st-plan">Planned</span></div>
+      <p>Derives your real estimate-to-actual multiplier from history and re-forecasts with it —
+         instead of telling you to estimate better.</p>
+      <div class="why">Practitioners are blunt that demanding accuracy just produces padded estimates.
+         Measuring the bias works; asking people to be better does not.</div>
+      <div class="acts"><button disabled>Not yet published</button></div>
+    </div>
+
+    <div class="sk">
+      <div class="top"><h3>Timesheet gap chaser</h3><span class="st st-plan">Planned</span></div>
+      <p>Finds missing and backfilled time before it corrupts every downstream cost figure, and
+         chases the specific people and days.</p>
+      <div class="why">Time data is routinely reconstructed from memory days later. Every cost number
+         inherits that error.</div>
+      <div class="acts"><button disabled>Not yet published</button></div>
+    </div>
+
+    <div class="sk">
+      <div class="top"><h3>RAID log</h3><span class="st st-plan">Planned</span></div>
+      <p>Risks, assumptions, issues and dependencies with probability-impact scoring, owners and
+         response strategies.</p>
+      <div class="why">Risk management appears as a required skill in PM job postings, and high
+         performers use risk practices far more than low performers.</div>
+      <div class="acts"><button disabled>Not yet published</button></div>
+    </div>
+
+    <div class="sk">
+      <div class="top"><h3>Sprint health</h3><span class="st st-plan">Planned</span></div>
+      <p>Backlog grooming, sprint health, velocity trends and retro preparation from status
+         transitions.</p>
+      <div class="why">Strong demand from engineering managers, and the cleanest data of any skill here.</div>
+      <div class="acts"><button disabled>Not yet published</button></div>
+    </div>
+
+    <div class="sk">
+      <div class="top"><h3>Zoho Projects setup &amp; migration</h3><span class="st st-plan">Planned</span></div>
+      <p>Guided configuration, and mapping task structures across from Jira, Asana, monday.com
+         or Trello.</p>
+      <div class="why">The on-ramp for everything above — most skills need time tracking, rates and a
+         working calendar before they can say anything.</div>
+      <div class="acts"><button disabled>Not yet published</button></div>
+    </div>
+
+  </div>
+  <p class="note">Status is deliberate. A skill is listed Live only when it has been built and tested.</p>
+</section>
+
+<section>
+  <div class="rigor">
+    <h2>How these are built</h2>
+    <p>Project management is full of numbers everyone repeats and nobody can source. We checked them
+       against PMI, AACE International, APM, ISO 21502 and the published benchmark studies before
+       writing a line of logic. Most did not survive:</p>
+    <ul>
+      <li>The <strong>85% utilisation target</strong> has no authoritative source and is directly
+          refuted in the literature. It is not used here.</li>
+      <li>Sector utilisation bands for agencies and MSPs <strong>trace only to software vendors' blogs</strong>.
+          They are reported as having no published benchmark, never as a target you are failing.</li>
+      <li><strong>No standards body prescribes a contingency percentage</strong>, so none is suggested.</li>
+      <li>Weekend-work findings cite <strong>published productivity research</strong>, and only fire on a
+          sustained pattern — a single heavy week carries no evidenced penalty.</li>
+    </ul>
+    <p>Every finding is graded <strong>hard evidence</strong>, <strong>derived</strong> or
+       <strong>inference</strong>, and the tool states plainly what it cannot see.</p>
+  </div>
+</section>
+
+<section id="install">
+  <h2 class="sh">Install</h2>
+  <p class="sub">The skill runs inside your own AI subscription, so inference costs you nothing extra.</p>
+
+  <div class="box">
+    <h3>Claude Code / Gemini CLI</h3>
+    <p class="who">For developers and technical PMs</p>
+<pre><code># Add the marketplace
+/plugin marketplace add &lt;your-org&gt;/pmskills
+
+# Install the skill pack
+/plugin install pmskills@pmskills</code></pre>
+  </div>
+
+  <div class="box">
+    <h3>Claude.ai / ChatGPT / Gemini</h3>
+    <p class="who">No terminal needed</p>
+    <ol>
+      <li>Download the skill file from the card above</li>
+      <li>Open Settings &rarr; Capabilities &rarr; Skills</li>
+      <li>Add the skill and upload the file</li>
+      <li>Ask a PM question — it activates on its own</li>
+    </ol>
+  </div>
+  <p class="note">Repository URL is a placeholder until the public repo is published.</p>
+</section>
+
+<footer>
+  <p>Open source, MIT licensed. Built for teams who want their project numbers to survive scrutiny.</p>
+</footer>
+</div>
+
+<div class="toast" id="t">Copied to clipboard</div>
+<script>
+function cp(text){
+  if(!text) return;
+  navigator.clipboard.writeText(text).then(function(){
+    var t=document.getElementById('t');
+    t.classList.add('on');
+    setTimeout(function(){t.classList.remove('on');},1700);
+  });
+}
+</script>
+</body>
+</html>

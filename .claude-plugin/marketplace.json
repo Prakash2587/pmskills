@@ -1,0 +1,12 @@
+{
+  "name": "pmskills",
+  "owner": { "name": "Prakash" },
+  "description": "Project management skills for AI agents — assess, plan, and act in Zoho Projects.",
+  "plugins": [
+    {
+      "name": "pmskills",
+      "source": "./",
+      "description": "Cost & capacity optimization, plus the Zoho Projects API reference layer it acts through. Produces graded assessments and action plans, then carries them out in Zoho Projects, confirm-first."
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "name": "pmskills",
+  "version": "0.1.0",
+  "description": "Cost & capacity optimization, plus the Zoho Projects API reference layer it acts through.",
+  "author": { "name": "Prakash" }
+}
