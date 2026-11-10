@@ -190,6 +190,9 @@ console.log('\n--- calendar, payload, hand-off ---');
   check('agent hand-off demands confirm-first writes', prompt.includes('wait for my yes'));
   check('agent hand-off forbids rate changes', prompt.includes('Never change a cost or billing rate'));
   check('agent hand-off asks for measured data first', prompt.includes('Read the real Workload report'));
+  check('agent hand-off covers a new or empty portal', /new or empty/.test(prompt) && /set the plan up/.test(prompt));
+  check('agent hand-off tells the agent to resolve generic names', prompt.includes('Consultant #2') && /Ask me which real person/.test(prompt));
+  check('agent hand-off forbids inviting people', prompt.includes('never add or invite people'));
 
   const md = P.renderReport(input, steps);
   check('report renders with plan and setup sections',

@@ -6,6 +6,8 @@ description: >
   is costing them, or what would happen if they changed hours or hourly rates. Triggers on
   "over budget", "burn rate", "team overloaded", "underutilised", "billable utilisation",
   "cost per resource", "resource allocation", "can we afford", "where is the money going".
+  Also use when the user pastes a capacity plan built in the PM Skills planner and asks for it to be
+  checked against, or set up in, their Zoho Projects portal.
 ---
 
 # Cost and capacity optimization
@@ -32,9 +34,63 @@ If the user explicitly wants EVM, say this plainly, then offer either of:
 
 Never present a reconstructed curve as if it were historical fact.
 
+## How to reason — the order of decisions
+
+This skill gives you a method, not a script. The data decides the answer; these steps decide the
+order you think in. Work through them every time, and let the portal's own numbers lead.
+
+**1. Establish what is true before what to do.** Read, then grade each fact (Rule 6), and only then
+recommend. A recommendation that arrives before its evidence is a guess with formatting.
+
+**2. Find out what changes the meaning of the numbers.** If you do not know these, ask — one
+question at a time — before judging anything:
+
+| What to know | Why it changes the answer |
+|---|---|
+| How the work is paid for | The same hours mean opposite things. *Time and materials:* hours are revenue, so a high figure is good news and unsold capacity is cost. *Fixed fee:* hours erode margin, so a high figure is a warning and a low one may be good news if scope is still being met. *Retainer:* judge against the contracted hours — above them is unpaid work, far below them is a renewal risk. *Milestone:* watch slip and the age of unbilled work, not utilisation. *Outcome-based or internal:* utilisation says little; lead with capacity and delivery. |
+| The working calendar | Availability comes from the portal's business hours, holidays and each person's own capacity — never a nominal week. |
+| Who will read this | Client-billed teams think in margin per client. Internal teams think in opportunity cost — which commitment to drop. |
+
+**3. Check it is really a problem.** Do not raise a finding for any of these:
+
+- A single heavy week, or a one-period spike where the schedule has float. Duration does the damage,
+  not a peak.
+- A variance with no approved baseline behind it. Variance is defined against a baseline.
+- A denominator you have not normalised for leave, part-time hours and public holidays.
+- A small deviation on an early, rough estimate. It is inside the noise.
+
+Overload becomes a finding when it is **sustained**: three or more consecutive weeks above 50 hours,
+a rolling average above 48, a standing six-day pattern, or a week with no full day of rest.
+
+**4. Choose the lever, least disruptive first.** Stop at the first one that closes the gap, and say
+which ones you passed over and why:
+
+1. Move work to someone **in the same role** who has room.
+2. Move work **across roles** — only as a question to the user, because hours are interchangeable on
+   paper and skills are not.
+3. **Use float:** if peak demand fits within availability, shift timing and leave the end date alone.
+   Never propose this for work with no float.
+4. **Let the date move:** if demand exceeds availability, say plainly that the work finishes later.
+5. **Reduce scope.**
+6. **Add people.**
+
+Asking the same people for more hours is not on this list. It is what the user is already doing.
+
+**5. State the trade-off with every option.** Each recommendation names what it costs — date, scope,
+money or someone's time — and who has to agree. An option with no stated cost has not been thought
+through.
+
+**6. Know when to stop.** If the data cannot support a recommendation, saying so is the answer
+(Rule 7).
+
 ## Data plane
 
-Read-only. Reads are free; every write is approval-gated (see **Writes**).
+For *how* to read and write — the endpoints, the two data planes (the user's Zoho MCP, or REST with
+OAuth), pagination, limits and the write-confirmation protocol — load the **zoho-projects-api** skill.
+It is the shared implementation layer; this skill decides *what* to read and *what* to change, and
+defers every actual call to it. The table below is the subset this skill depends on.
+
+Reads are free; every write is approval-gated (see **Writes**).
 
 | You need | Where it comes from |
 |---|---|
@@ -70,9 +126,10 @@ Zoho returns `overall_allocation` as `under`, `optimal` or `over` per person, ag
 portal's own `total_availability`. **Use that classification.** It already accounts for business
 hours and holidays, which is why it is defensible.
 
-Only fall back to your own threshold if the field is absent, and if you do, say you are doing it.
-A reasonable fallback band is under 70% = under-utilised, above 90% = over-allocated, but it is a
-fallback, not the standard.
+If the field is absent, do not substitute a percentage band — no utilisation band has a source that
+survives scrutiny. Fall back to arithmetic and say you are doing it: a person is **over** when their
+planned or logged hours exceed their availability, and otherwise report their **spare hours**. Never
+label someone "under-utilised" from a percentage you chose.
 
 ## Rule 3 — Weekend and after-hours burn
 
@@ -100,8 +157,11 @@ design. Ask which they are before judging the number, or use what the intake alr
 When the user asks "what if", show the arithmetic in full:
 
 ```
-5 people × +2 h/week × 12 weeks × ₹X/h = ₹Y
+<people> × <extra hours a week> × <weeks> × <cost rate per hour> = <total>
+e.g. 5 people × +2 h/week × 12 weeks × <rate> = <total>
 ```
+
+Use the portal's own currency and each person's own rate. Never assume a currency.
 
 Bound every projection by `total_availability`. Proposing extra hours for someone Zoho already
 classifies as `over` is not an optimisation, it is burnout with a spreadsheet. Say that.
@@ -120,15 +180,46 @@ Label each line of the assessment:
 Never let an inference inherit the authority of a returned field. This grading is what makes the
 output safe to hand to a finance team.
 
+## Advice you never give
+
+These are the lines that make project advice worthless. Replace each with the specific thing.
+
+| Never say | Because | Say instead |
+|---|---|---|
+| "Increase utilisation" | It is the instruction that produces padded timesheets. | Show what the hours earned alongside the hours logged, and let the user judge. |
+| "Add contingency" or "add a buffer" | No standards body prescribes a percentage; padding hides the risk. | Give the estimate-to-actual ratio from their own history. |
+| "Improve your estimates" | Demanding accuracy produces padded estimates. | Measure the bias and apply it. |
+| "Communicate more with stakeholders" | It contains no information. | Name the person, the decision needed and the date it is needed by. |
+| "Track time more precisely" | Finer granularity is not better data. | Improve coverage and timeliness: who has not logged, and for which days. |
+
+## Voice — how the answer should sound
+
+- **Lead with the finding and its number.** One line each. No preamble, no restating the question.
+- **Be specific to this portal.** A real person, a real task, real hours, a real date — taken from
+  what you read. If you cannot be specific, you have not read enough.
+- **Show the arithmetic**, so the reader can check it without trusting you.
+- **Use plain words.** Explain a term the first time you use it, and skip the ones you do not need.
+- **Say what you could not see**, once, plainly — not a hedge on every sentence.
+- **Do not moralise about people.** Low utilisation is not laziness and high utilisation is not
+  commitment; the data cannot see mentoring, reviews or support work. Decisions about people and
+  rates belong to the user.
+- **Match the reader.** Lead with margin per client for client-billed work, and with what to drop
+  for internal work.
+- **End on one action** — the single change with the most effect.
+
 ## Output contract
 
 **Assessment** — 3 to 6 findings, each one line, each graded, each with its number.
-> *Under-utilised (hard evidence):* 2 of 9 people sit at `under` — A. Kumar (41% of availability)
-> and R. Shah (38%) across the last 8 weeks.
+> *Has room (hard evidence):* 2 of 9 people sit at `under` — `<person A>` (`<allocated>` h of
+> `<available>` h) and `<person B>` (`<allocated>` h of `<available>` h) across the last 8 weeks.
 
 **Action plan** — concrete, bounded, each with its arithmetic and its owner.
-> *Rebalance:* move the 3 open QA tasks from M. Iyer (`over`, 112%) to A. Kumar. Frees ≈18 h/month
-> on the critical path at no added cost.
+> *Rebalance:* move `<the three open tasks, by title>` from `<person C>` (`over`) to `<person A>`.
+> Frees ≈`<hours>` h/month on the critical path at no added cost.
+
+Everything in `<angle brackets>` is a placeholder for this document only. In a real answer every
+name, task title, project and figure comes from the portal you just read. **Never reuse a name or
+number from an example**, and never invent one to fill a gap — say what is missing instead.
 
 **Confidence note** — what you could not see, and what would change the answer.
 
@@ -144,15 +235,42 @@ End with the single highest-leverage action, not a list. PMs act on one thing.
 - If the honest answer is "your data is too thin to support a recommendation", that **is** the
   answer. Say it and stop.
 
-## Writes
+## Starting from a plan built in the PM Skills planner
 
-Every write is approval-gated. Show the exact change, ask, then act. Reads never need approval.
+A user may paste a plan from the web planner: a list of moves, plus setup data as JSON. Treat it as
+**reported, not measured** — it is what they typed, and it has never seen their portal. Do not refuse
+it for lack of timelogs; Rule 1's four-week minimum governs utilisation *findings*, not setting a
+plan up.
 
-Changes this skill may propose, once the user confirms: reassigning tasks, adjusting task
-assignees' allocation, logging a summary comment on the project feed, and persisting a
-`budget_info` snapshot for trend tracking.
+1. **Check the connection first.** If you cannot read the portal, stop and walk the user through
+   connecting it (the zoho-projects-api skill has the steps). Do not guess at their data.
+2. **Find out which case you are in** by reading what the portal already holds:
+   - *The people and work already exist.* Read the measured picture — workload and budget — and tell
+     the user where it differs from what they reported. Then propose the plan's moves one at a time,
+     as task reassignments.
+   - *The portal is new or empty.* There is nothing to compare against. Say so, and set the plan up
+     using "Setting up a plan from the planner" in the zoho-projects-api skill.
+3. **Resolve the names.** Planner names are free text and may be generic references such as
+   "Consultant #2" or "Project #1". Ask which real person and project each one is. Never assign work
+   to a guessed match.
+4. **Leave rates to the user.** The setup data carries cost and billing rates so the user can see
+   them. You never write a rate: list the figures and tell them where to enter each one.
 
-Never write a rate change. Never bulk-reassign more than 5 items without re-confirming.
+## Writes — turning the plan into changes in Zoho Projects
+
+Every write is approval-gated and executed through the **zoho-projects-api** skill, which holds the
+exact calls and the confirm-first protocol. This skill's job is to propose the specific change; that
+skill carries it out.
+
+The action plan maps to concrete changes:
+
+- **Rebalance** → reassign named tasks from the over-allocated to the under-utilised (confirm each).
+- **Revise a budget** after an overrun → set a revised project budget (confirm the figure).
+- **Record the assessment** → post a summary comment to the project feed (confirm).
+- **Start a baseline** → schedule a recurring `budget_info` snapshot into your own store (writes nothing to Zoho).
+
+Hard limits, inherited from the api skill: never write a cost or billing rate; never reassign or
+re-budget without a specific yes; never bulk-change more than 5 items without re-confirming.
 
 ## Where to do this
 

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cost &amp; capacity optimization — install and set up — Zoho Projects</title>
+<meta name="description" content="Install the cost and capacity optimization skill in Claude, ChatGPT, Gemini, Cursor or Copilot, connect Zoho Projects, and run it.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../ui.css?v=30a1f08e">
+<script src="../ui.js?v=864cc105"></script>
+<script src="../agents.js?v=2b16a12b"></script>
+<link rel="stylesheet" href="../site.css?v=c6fd6ceb">
+</head>
+<body>
+<div class="wrap">
+
+<div class="top">
+  <a class="mark" href="../index.html"><i>PM</i>Zoho Projects</a>
+  <nav>
+    <a class="link" href="../index.html#skills">Skills</a>
+    <a class="link" href="../index.html#how">How it works</a>
+    <a class="link" href="../index.html#install">Install</a>
+    <a class="link" href="https://github.com/Prakash2587/pmskills" target="_blank" rel="noopener">GitHub</a>
+    <span id="theme-slot"></span>
+  </nav>
+</div>
+
+<div class="crumb"><a href="../index.html#skills">&larr; All skills</a></div>
+
+<header class="page-head">
+  <div class="meta"><span class="eyebrow">Skill · Cost &amp; capacity</span><span class="st live">Live</span></div>
+  <h1>Cost &amp; capacity optimization</h1>
+  <p class="lede">Finds who is over capacity and by how much, proposes specific moves, forecasts the budget, and carries the plan out in Zoho Projects — asking before every change.</p>
+  <div class="cta">
+    <a class="btn primary big" href="../tools/cost-capacity.html" target="_blank" rel="noopener">Try the planner</a>
+    <a class="btn big" href="https://github.com/Prakash2587/pmskills/tree/main/skills/cost-capacity-optimization" target="_blank" rel="noopener">View on GitHub</a>
+  </div>
+</header>
+
+<div class="sticky-tabs">
+  <span>Steps for <b id="agent-name">Claude</b></span>
+  <div class="filters" id="agent-tabs"></div>
+</div>
+
+<section class="doc" style="border-top:none">
+  <div><span class="no">Before you start</span><h2>What you need</h2></div>
+  <div class="body" id="need"></div>
+</section>
+
+<section class="doc" id="install">
+  <div><span class="no">Step 01</span><h2>Add the two skills</h2></div>
+  <div class="body" id="step-add"></div>
+</section>
+
+<section class="doc">
+  <div><span class="no">Step 02</span><h2>Connect Zoho Projects</h2></div>
+  <div class="body" id="step-connect"></div>
+</section>
+
+<section class="doc">
+  <div><span class="no">Step 03</span><h2>Use it</h2></div>
+  <div class="body">
+    <h3>Ask a question</h3>
+    <p>Start a new chat with the Zoho Projects connector switched on, and ask in your own words. For example:</p>
+    <div class="path">Who on my team is over capacity this month, and what should move?</div>
+    <div class="path">Where is the budget on my largest project heading, and why?</div>
+    <div class="path">What share of last quarter's hours was billable, and is that the right measure for us?</div>
+
+    <h3>Or bring a plan from the planner</h3>
+    <ol>
+      <li>Build a plan in the <a href="../tools/cost-capacity.html" target="_blank" rel="noopener">planner</a> and adjust it until it is the one you want.</li>
+      <li>On its last step, press <b>Copy the hand-off prompt</b>.</li>
+      <li>Paste it into your agent.</li>
+    </ol>
+    <p>The agent then checks what your portal already holds:</p>
+    <ul>
+      <li><b>Your people and work are already there</b> — it reads the measured figures, shows where they differ from what you typed, and proposes each change.</li>
+      <li><b>The portal is new</b> — it sets the plan up as projects and tasks, with owners and weekly hours.</li>
+    </ul>
+    <p>If the plan uses generic names such as “Consultant #2”, it asks which real person each one is.</p>
+  </div>
+</section>
+
+<section class="doc">
+  <div><span class="no">Safeguards</span><h2>What it will and will not do</h2></div>
+  <div class="body">
+    <ul>
+      <li><b>Reads freely, confirms every write.</b> You see the exact change before it happens.</li>
+      <li><b>At most five changes per confirmation.</b> Larger sets are done in batches.</li>
+      <li><b>Never writes a cost or billing rate.</b> It lists the figures for you to enter.</li>
+      <li><b>Never adds or invites people.</b> It tells you who is missing.</li>
+      <li><b>Never recommends removing a person</b> or cutting someone's rate.</li>
+      <li><b>Says what it cannot see</b> — and stops when the data is too thin to support a recommendation.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="doc" id="sources">
+  <div><span class="no">Basis</span><h2>Where its rules come from</h2></div>
+  <div class="body">
+    <p>Before this skill went live, the figures and limits in it were checked against the published guidance below. A number that could not be traced to a source was left out, and judgement that is our own reasoning is marked as such.</p>
+    <table>
+      <thead><tr><th>What the skill does</th><th>Where it comes from</th></tr></thead>
+      <tbody>
+        <tr><td>Measures capacity against each person's real calendar, never a nominal week</td><td>PMI and AACE International guidance on resource calendars</td></tr>
+        <tr><td>Chooses between shifting work within its float and letting the date move</td><td>APM, on resource smoothing and resource levelling</td></tr>
+        <tr><td>Flags overtime only when it is sustained</td><td>Thomas &amp; Raynar (1997), Journal of Construction Engineering and Management; EU Working Time Directive</td></tr>
+        <tr><td>Compares your utilisation with a benchmark only where a published one exists</td><td>SPI Research, Professional Services Maturity Benchmark; Deltek Clarity A&amp;E Industry Study</td></tr>
+        <tr><td>Reports a variance only against an approved baseline</td><td>PMI</td></tr>
+        <tr><td>Reads the same hours differently for time-and-materials, fixed-fee and retainer work</td><td>Our own reasoning, not a published standard — stated here so you can judge it</td></tr>
+      </tbody>
+    </table>
+    <h3 style="margin-top:30px">What it leaves out, and why</h3>
+    <ul>
+      <li><b>A target utilisation percentage</b> such as 85%. Neither PMI's guide nor ISO 21502 sets a number, so you are compared with your own figures.</li>
+      <li><b>A standard contingency percentage.</b> No standards body prescribes one; AACE asks for it to come from risk analysis.</li>
+      <li><b>Utilisation bands for agencies and managed-service teams.</b> The figures in circulation trace only to vendor blogs.</li>
+    </ul>
+    <p class="fine">This is independent work. It is not affiliated with or endorsed by PMI, AACE International, APM or ISO. The full source list, with what each item was checked against, is in the repository's <a href="https://github.com/Prakash2587/pmskills/tree/main/knowledge" target="_blank" rel="noopener">knowledge folder</a>.</p>
+  </div>
+</section>
+
+<section class="doc">
+  <div><span class="no">Troubleshooting</span><h2>If something goes wrong</h2></div>
+  <div class="body">
+    <table>
+      <thead><tr><th>What you see</th><th>What to do</th></tr></thead>
+      <tbody>
+        <tr><td>The agent says it cannot reach Zoho Projects</td><td>Repeat step 02, then start a <b>new</b> chat with the connector switched on. The skill also walks you through this.</td></tr>
+        <tr><td>It answers without using the skill</td><td>Name it: “Use the cost-capacity-optimization skill.” Check both skills are listed in your agent.</td></tr>
+        <tr><td>Budget or workload figures are missing</td><td>Those need Zoho Projects Premium; across projects needs Enterprise. The skill says which findings it cannot produce.</td></tr>
+        <tr><td>It reports hours but no cost for someone</td><td>That person has no cost rate in Zoho Projects. Enter it there; the skill will not.</td></tr>
+        <tr><td>It refuses to analyse utilisation</td><td>Fewer than about four weeks of logged time. Setting a plan up still works.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="doc">
+  <div><span class="no">Source</span><h2>Read the skill</h2></div>
+  <div class="body">
+    <p>Both files are plain text. Read them before you install them.</p>
+    <div class="dl">
+      <a class="btn" href="cost-capacity-optimization/SKILL.md">cost-capacity-optimization/SKILL.md</a>
+      <a class="btn" href="zoho-projects-api/SKILL.md">zoho-projects-api/SKILL.md</a>
+    </div>
+    <p class="fine">Open source, MIT licensed · <a href="https://github.com/Prakash2587/pmskills" target="_blank" rel="noopener">github.com/Prakash2587/pmskills</a></p>
+  </div>
+</section>
+
+<footer>
+  <span>PM Skills for Zoho Projects · open source, MIT licensed</span>
+  <a href="../index.html#skills">All skills</a>
+</footer>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var A = window.PMAgents;
+  var agent = A.chosen() || A.list[0];
+  function $(id) { return document.getElementById(id); }
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+
+  var ZIPS = '<div class="dl"><a class="btn" href="../downloads/cost-capacity-optimization.zip" download>cost-capacity-optimization.zip</a>' +
+    '<a class="btn" href="../downloads/zoho-projects-api.zip" download>zoho-projects-api.zip</a></div>';
+
+  function render() {
+    $('agent-tabs').innerHTML = A.tabs(agent.id);
+    $('agent-name').textContent = agent.name;
+
+    $('need').innerHTML = '<ul>' +
+      '<li><b>' + agent.name + '</b>, on a plan that allows custom skills and connectors.' + (agent.uploadNote ? ' ' + esc(agent.uploadNote) : '') + '</li>' +
+      '<li><b>A Zoho Projects portal</b> where you can change settings. <a href="' + A.signup + '" target="_blank" rel="noopener">Create one</a> if you are new.</li>' +
+      '<li><b>Zoho Projects Premium</b> for budget and workload figures, <b>Enterprise</b> for workload across projects. On a lower plan the skill still works, and says what it cannot measure.</li></ul>';
+
+    $('step-add').innerHTML =
+      '<p>There are two, and they travel together: <b>cost-capacity-optimization</b> decides what to assess and what to change; <b>zoho-projects-api</b> is how it reads and writes your portal.</p>' +
+      (agent.plugin
+        ? '<h3>' + agent.pluginWhere + '</h3><p>Run these two commands. One plugin carries both skills.</p><pre>' + esc(agent.plugin) + '</pre>' +
+          '<div class="dl"><button class="btn" data-copy="' + esc(agent.plugin) + '">Copy both commands</button></div><h3>Claude app</h3>'
+        : '') +
+      '<p>Download both packages.</p>' + ZIPS + '<p>' + esc(agent.upload) + '</p>' +
+      '<div class="check"><b>Check</b><span>Both skills appear in ' + agent.name + '\'s list of skills.</span></div>';
+
+    $('step-connect').innerHTML =
+      '<p>The skill works through your own Zoho Projects sign-in. Nothing passes through this site.</p>' +
+      '<ol><li><b>Sign in to Zoho Projects</b> as someone who can change portal settings.</li>' +
+      '<li><b>Turn on MCP Access:</b> Portal Configuration → AI Hub → MCP Access.</li>' +
+      '<li><b>Turn on API Access:</b> Developer Space → API Access &amp; Mobile Access → enable → Update.</li>' +
+      '<li><b>Add the connector in ' + agent.name + ':</b></li></ol>' +
+      '<div class="path">' + esc(agent.connect) + '</div>' +
+      (agent.connectNote ? '<p class="fine">' + esc(agent.connectNote) + '</p>' : '') +
+      '<p>Approve the Zoho sign-in when it asks, then start a new chat with the connector switched on.</p>' +
+      '<div class="check"><b>Check</b><span>Ask “List my Zoho Projects projects.” It should name your real projects.</span></div>' +
+      '<p class="fine">Menu names change between versions. If a step does not match what you see, follow <a href="' + A.zohoGuide + '" target="_blank" rel="noopener">Zoho\'s connection guide</a>.</p>';
+  }
+
+  document.addEventListener('click', function (ev) {
+    var tab = ev.target.closest('[data-agent]');
+    if (tab) { agent = A.choose(tab.getAttribute('data-agent')) || agent; render(); return; }
+    var c = ev.target.closest('[data-copy]');
+    if (c) window.PMUI.copy(c.getAttribute('data-copy')).then(function () { window.PMUI.copied(c); }, function () {});
+  });
+
+  $('theme-slot').innerHTML = window.PMUI.themeToggle();
+  render();
+})();
+</script>
+</body>
+</html>

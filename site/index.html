@@ -3,151 +3,21 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PM Skills — Project management skills for AI agents</title>
+<title>Project management skills for AI agents — Zoho Projects</title>
 <meta name="description" content="Project management skills for Claude, ChatGPT and Gemini. Each one produces an assessment and a plan from your numbers, then carries it out in Zoho Projects.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="ui.css?v=30a1f08e">
 <script src="ui.js?v=864cc105"></script>
-<style>
-body { background: var(--panel); }
-.wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
-section { padding: 72px 0; border-top: 1px solid var(--line); }
-h2 { font-size: 28px; line-height: 1.2; letter-spacing: -0.02em; font-weight: 600; margin: 10px 0 0; }
-.sec-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; flex-wrap: wrap; margin-bottom: 32px; }
-.sec-head p { color: var(--muted); margin: 8px 0 0; max-width: 520px; }
-
-/* top bar */
-.top { display: flex; align-items: center; justify-content: space-between; gap: 16px; height: 64px; }
-.mark { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 15px; letter-spacing: -0.01em; color: var(--ink); }
-.mark i { width: 22px; height: 22px; border-radius: 4px; background: var(--ink); color: var(--panel); display: grid; place-items: center;
-  font: 600 10px var(--mono); font-style: normal; }
-.top nav { display: flex; align-items: center; gap: 4px; }
-.top nav a.link { color: var(--muted); font-size: 14px; padding: 8px 10px; border-radius: var(--r); }
-.top nav a.link:hover { color: var(--ink); text-decoration: none; background: var(--soft); }
-.top nav .btn { margin-left: 6px; }
-
-/* hero */
-.hero { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 56px; align-items: center; padding: 56px 0 84px; }
-.hero h1 { font-size: clamp(34px, 4.6vw, 52px); line-height: 1.08; letter-spacing: -0.035em; font-weight: 600; margin: 16px 0 20px; }
-.hero h1 em { font-style: normal; color: var(--accent-text); }
-.hero .lede { font-size: 18px; line-height: 1.55; color: var(--muted); max-width: 500px; margin: 0 0 32px; }
-.cta { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
-.cta-note { margin: 16px 0 0; font: 400 12px var(--mono); color: var(--faint); }
-
-/* the specimen: a real piece of planner output, not an illustration */
-.specimen { border: 1px solid var(--line-strong); border-radius: var(--r-lg); background: var(--panel); box-shadow: var(--shadow); overflow: hidden; }
-.spec-top { display: flex; justify-content: space-between; align-items: center; padding: 12px 18px; border-bottom: 1px solid var(--line);
-  font: 500 10.5px var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--faint); }
-.spec-body { padding: 22px 22px 20px; }
-.spec-verdict { font-size: 16px; font-weight: 600; line-height: 1.4; letter-spacing: -0.01em; margin: 0 0 20px; }
-.who { display: grid; grid-template-columns: 96px 1fr 70px; gap: 12px; align-items: center; padding: 9px 0; border-top: 1px solid var(--line); font-size: 13px; }
-.who small { display: block; font: 400 10.5px var(--mono); color: var(--faint); }
-.tr { position: relative; height: 6px; background: var(--track); border-radius: 2px; margin: 4px 0; }
-.tr i { display: block; height: 100%; border-radius: 2px; background: var(--barfill); }
-.tr i.over { background: var(--err); }
-.tr i.plan { background: var(--ok); }
-.tr::after { content: ""; position: absolute; left: 74%; top: -3px; width: 2px; height: 12px; background: var(--ink); }
-.who .v { font: 400 11px var(--mono); text-align: right; color: var(--muted); line-height: 1.5; }
-.who .v b { color: var(--err); }
-.spec-step { margin-top: 16px; padding: 12px 14px; background: var(--soft); border-radius: var(--r); font-size: 13px; display: flex; gap: 10px; }
-.spec-step span { font: 500 11px var(--mono); color: var(--accent-text); }
-
-/* gallery */
-.filters { display: inline-flex; padding: 3px; background: var(--chip); border-radius: 8px; gap: 2px; }
-.filters button { border: none; background: transparent; color: var(--muted); font: 500 13px var(--font); padding: 7px 13px; border-radius: 6px; cursor: pointer; }
-.filters button.on { background: var(--panel); color: var(--ink); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.14); }
-.gallery { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
-.tile { border: 1px solid var(--line); border-radius: var(--r-lg); padding: 20px 20px 18px; display: flex; flex-direction: column; gap: 10px; cursor: pointer;
-  background: var(--panel); min-height: 208px; transition: border-color 0.12s, box-shadow 0.12s; }
-.tile:hover, .tile:focus-visible { border-color: var(--line-strong); box-shadow: var(--shadow); }
-.tile-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-.st { display: inline-flex; align-items: center; gap: 6px; font: 500 10.5px var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--faint); white-space: nowrap; }
-.st::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--line-strong); }
-.st.live { color: var(--ok); } .st.live::before { background: var(--ok); }
-.st.next { color: var(--info); } .st.next::before { background: var(--info); }
-.tile h3 { font-size: 16.5px; line-height: 1.3; letter-spacing: -0.01em; font-weight: 600; margin: 4px 0 0; }
-.tile p { font-size: 13.5px; color: var(--muted); margin: 0; flex: 1; }
-.tile-acts { display: flex; gap: 6px; margin-top: 8px; }
-.tile-acts .btn { flex: 1; height: 34px; padding: 0 8px; font-size: 13px; }
-.tile.soon h3 { color: var(--ink); }
-.tile.soon .btn[disabled] { border-style: dashed; background: transparent; opacity: 0.7; }
-.tile.live { grid-column: span 2; padding: 26px 26px 22px; border-color: var(--line-strong); }
-.tile.live h3 { font-size: 22px; letter-spacing: -0.02em; }
-.tile.live p { font-size: 15px; max-width: 420px; }
-.tile.live .tile-acts { max-width: 340px; }
-.tile.live .tile-acts .btn { height: 40px; }
-.tile.ask { border-style: dashed; justify-content: space-between; }
-
-/* how it works */
-.steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; }
-.steps div b { display: block; font-size: 18px; letter-spacing: -0.01em; margin: 12px 0 6px; }
-.steps div p { margin: 0; color: var(--muted); font-size: 14.5px; max-width: 300px; }
-.steps .no { font: 500 12px var(--mono); color: var(--accent-text); }
-
-/* proof */
-.claims { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0 56px; }
-.claim { display: grid; grid-template-columns: 1fr auto; gap: 16px; padding: 18px 0; border-bottom: 1px solid var(--line); align-items: baseline; }
-.claim b { font-size: 15px; }
-.claim span { display: block; font-size: 13.5px; color: var(--muted); margin-top: 2px; font-weight: 400; }
-.claim em { font: 500 10.5px var(--mono); font-style: normal; letter-spacing: 0.08em; text-transform: uppercase; color: var(--err); white-space: nowrap; }
-.claim em.kept { color: var(--ok); }
-
-/* install */
-.install { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-.box { border: 1px solid var(--line); border-radius: var(--r-lg); padding: 26px; }
-.box h3 { font-size: 16.5px; margin: 0 0 2px; }
-.box .who-for { font-size: 13.5px; color: var(--muted); margin: 0 0 18px; }
-pre { background: var(--soft); border: 1px solid var(--line); border-radius: var(--r); padding: 14px 16px; font: 400 12.5px/1.7 var(--mono);
-  overflow-x: auto; margin: 0 0 14px; color: var(--ink); }
-.box ol { padding-left: 18px; margin: 0; font-size: 14.5px; color: var(--muted); line-height: 1.9; }
-
-footer { padding: 28px 0 44px; border-top: 1px solid var(--line); display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap;
-  font-size: 13px; color: var(--faint); }
-
-/* modal */
-.mask { position: fixed; inset: 0; background: rgba(8, 9, 12, 0.5); display: none; align-items: center; justify-content: center; z-index: 20; padding: 16px; }
-.mask.on { display: flex; }
-.modal { background: var(--panel); color: var(--ink); border: 1px solid var(--line); border-radius: var(--r-lg); padding: 34px; width: 540px; max-width: 100%;
-  max-height: 88vh; overflow-y: auto; box-shadow: var(--shadow); position: relative; }
-.modal .x { position: absolute; top: 14px; right: 16px; border: none; background: none; font-size: 22px; line-height: 1; color: var(--faint); cursor: pointer; }
-.modal h2 { font-size: 22px; margin: 10px 28px 12px 0; }
-.modal p { font-size: 14.5px; color: var(--muted); margin: 0 0 14px; }
-.modal .why { font-size: 13.5px; border-left: 2px solid var(--line-strong); padding-left: 14px; }
-.modal h4 { font: 500 11px var(--mono); letter-spacing: 0.09em; text-transform: uppercase; color: var(--faint); margin: 26px 0 10px; }
-.modal ul { margin: 0 0 6px 18px; padding: 0; font-size: 14px; color: var(--muted); line-height: 1.8; }
-.modal .acts { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 24px; }
-.field { margin-bottom: 18px; }
-.field label { display: block; font-size: 13.5px; font-weight: 500; margin-bottom: 7px; }
-.field input, .field textarea { width: 100%; padding: 11px 13px; border: 1px solid var(--line-strong); border-radius: var(--r); font: 400 15px var(--font);
-  background: var(--panel); color: var(--ink); }
-.field textarea { min-height: 128px; resize: vertical; line-height: 1.5; }
-.field input:focus, .field textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
-.err { color: var(--err); font-size: 13px; min-height: 20px; }
-.fine { font-size: 12.5px; color: var(--faint); margin: 16px 0 0 !important; }
-
-@media (max-width: 960px) {
-  .hero { grid-template-columns: 1fr; gap: 40px; padding: 32px 0 56px; }
-  .gallery { grid-template-columns: repeat(2, 1fr); }
-  .steps { grid-template-columns: 1fr; gap: 28px; }
-  .claims, .install { grid-template-columns: 1fr; }
-  section { padding: 52px 0; }
-}
-@media (max-width: 600px) {
-  .wrap { padding: 0 16px; }
-  .gallery { grid-template-columns: 1fr; }
-  .tile.live { grid-column: auto; }
-  .top nav a.link { display: none; }
-  h2 { font-size: 24px; }
-}
-</style>
+<script src="agents.js?v=2b16a12b"></script>
+<link rel="stylesheet" href="site.css?v=c6fd6ceb">
 </head>
 <body>
 <div class="wrap">
 
 <div class="top">
-  <a class="mark" href="index.html"><i>PM</i>PM Skills</a>
+  <a class="mark" href="index.html"><i>PM</i>Zoho Projects</a>
   <nav>
     <a class="link" href="#skills">Skills</a>
     <a class="link" href="#how">How it works</a>
@@ -161,13 +31,15 @@ footer { padding: 28px 0 44px; border-top: 1px solid var(--line); display: flex;
 <header class="hero">
   <div>
     <span class="eyebrow">Project management skills for AI agents</span>
-    <h1>Your AI agent, taught to run a project <em>properly</em>.</h1>
-    <p class="lede">Each skill gives Claude, ChatGPT or Gemini one project-management discipline. It turns your numbers into an assessment and a plan, then carries the plan out in Zoho Projects.</p>
+    <h1>Run your projects on<br><em id="agent-word">Claude</em><em>.</em></h1>
+    <p class="lede">Each skill gives Claude, ChatGPT, or Gemini a defined project-management discipline. You turn your numbers into an assessment and a plan, then execute the plan in Zoho Projects.</p>
     <div class="cta">
-      <a class="btn primary big" href="tools/cost-capacity.html">Try the planner</a>
-      <button class="btn big" data-open="install" data-id="cost-capacity">Install the skill</button>
+      <div class="menu-wrap" id="explore">
+        <button class="btn primary big" id="explore-btn" aria-haspopup="true" aria-expanded="false">Explore skills
+          <svg viewBox="0 0 12 12" width="11" height="11" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <div class="menu" id="explore-menu" role="menu" aria-label="Choose your AI agent"></div>
+      </div>
     </div>
-    <p class="cta-note">No sign-up needed. Start from a sample team.</p>
   </div>
 
   <div class="specimen" aria-label="Sample planner output">
@@ -188,9 +60,20 @@ footer { padding: 28px 0 44px; border-top: 1px solid var(--line); display: flex;
   </div>
 </header>
 
+<section id="how" class="how">
+  <div class="sec-head"><div><span class="eyebrow">How it works</span><h2>From a question to a change in your project.</h2></div></div>
+  <div class="steps">
+    <div><span class="no">01</span><b>Pick a skill</b><p>Each one covers a single job: capacity and cost, status reports, risks.</p></div>
+    <div><span class="no">02</span><b>Try it here</b><p>A guided tool turns your numbers into an assessment and a plan. No sign-up.</p></div>
+    <div><span class="no">03</span><b>Add it to your agent</b><p>Install the skill in Claude, ChatGPT, Gemini or another agent you already use.</p></div>
+    <div><span class="no">04</span><b>Run it in Zoho Projects</b><p>The agent works on your real project data, and asks before it changes anything.</p></div>
+  </div>
+</section>
+
 <section id="skills">
   <div class="sec-head">
-    <div><span class="eyebrow">Skill gallery</span><h2 id="gal-title"></h2></div>
+    <div><span class="eyebrow">Skill gallery</span><h2>Everything you need to manage your projects</h2>
+      <p>A skill goes live only after it is checked against published standards: PMI, AACE International, APM and ISO 21502.</p></div>
     <div class="filters" id="filters">
       <button class="on" data-f="all">All</button>
       <button data-f="live">Live</button>
@@ -198,53 +81,24 @@ footer { padding: 28px 0 44px; border-top: 1px solid var(--line); display: flex;
     </div>
   </div>
   <div class="gallery" id="gallery"></div>
-</section>
-
-<section id="how">
-  <div class="sec-head"><div><span class="eyebrow">How it works</span><h2>From a question to a change in your project.</h2></div></div>
-  <div class="steps">
-    <div><span class="no">01</span><b>Assess</b><p>Give it your team and their week. It shows who is over capacity, what the week costs and where the budget is heading.</p></div>
-    <div><span class="no">02</span><b>Plan</b><p>It proposes specific moves. You edit, reorder or remove any of them, and every number recalculates.</p></div>
-    <div><span class="no">03</span><b>Run it in Zoho Projects</b><p>Your agent sets the plan up in your portal, reading the real figures first and asking before each change.</p></div>
-  </div>
-</section>
-
-<section>
-  <div class="sec-head"><div><span class="eyebrow">Why the advice holds up</span><h2>We checked the numbers everyone repeats.</h2>
-    <p>Against PMI, AACE International, APM, ISO 21502 and the published benchmark studies. Most did not survive.</p></div></div>
-  <div class="claims">
-    <div class="claim"><b>The 85% utilisation target<span>No authoritative source, and refuted in the literature.</span></b><em>Not used</em></div>
-    <div class="claim"><b>Agency and MSP utilisation bands<span>They trace only to software vendors' blogs.</span></b><em>Not used</em></div>
-    <div class="claim"><b>A standard contingency percentage<span>No standards body prescribes one.</span></b><em>Not used</em></div>
-    <div class="claim"><b>Overtime costs productivity<span>Published research — applied only to a sustained pattern.</span></b><em class="kept">Sourced</em></div>
+  <div class="proofs">
+    <div><b>Its benchmarks have a source</b><p>Any figure it compares you against traces to a published standard or study. Rules of thumb nobody can trace are left out.</p></div>
+    <div><b>It shows its evidence</b><p>Each finding says whether it was read from your data, calculated from it, or is a judgement call.</p></div>
+    <div><b>It asks before it acts</b><p>It reads your project freely. Nothing changes until you say yes.</p></div>
   </div>
 </section>
 
 <section id="install">
-  <div class="sec-head"><div><span class="eyebrow">Install</span><h2>Runs inside your own AI subscription.</h2></div></div>
-  <div class="install">
-    <div class="box">
-      <h3>Claude Code</h3>
-      <p class="who-for">For developers and technical PMs</p>
-<pre><code>/plugin marketplace add Prakash2587/pmskills
-/plugin install pmskills@pmskills</code></pre>
-      <button class="btn" data-copy="/plugin marketplace add Prakash2587/pmskills&#10;/plugin install pmskills@pmskills">Copy both commands</button>
-    </div>
-    <div class="box">
-      <h3>Claude.ai · ChatGPT · Gemini</h3>
-      <p class="who-for">No terminal needed</p>
-      <ol>
-        <li>Download the <a href="skills/cost-capacity-optimization/SKILL.md" download>skill file</a></li>
-        <li>Open Settings &rarr; Capabilities &rarr; Skills</li>
-        <li>Add the skill and upload the file</li>
-        <li>Ask a PM question — it activates on its own</li>
-      </ol>
-    </div>
+  <div class="sec-head">
+    <div><span class="eyebrow">Install</span><h2>Install a skill on <span id="install-agent">Claude</span>.</h2>
+      <p>Every skill installs the same way, and runs inside your own AI subscription. Each skill's page has its detailed steps.</p></div>
+    <div class="filters" id="agent-tabs"></div>
   </div>
+  <div class="setup" id="install-steps"></div>
 </section>
 
 <footer>
-  <span>PM Skills · open source, MIT licensed</span>
+  <span>PM Skills for Zoho Projects · open source, MIT licensed</span>
   <a href="https://github.com/Prakash2587/pmskills" target="_blank" rel="noopener">github.com/Prakash2587/pmskills</a>
 </footer>
 </div>
@@ -256,7 +110,6 @@ footer { padding: 28px 0 44px; border-top: 1px solid var(--line); display: flex;
   'use strict';
 
   var REPO = 'https://github.com/Prakash2587/pmskills';
-  var INSTALL = '/plugin marketplace add Prakash2587/pmskills\n/plugin install pmskills@pmskills';
 
   /* status: live | next | plan.  `tool` and `file` exist only for built skills. */
   var SKILLS = [
@@ -265,7 +118,9 @@ footer { padding: 28px 0 44px; border-top: 1px solid var(--line); display: flex;
       long: 'Finds who is over capacity and by how much, proposes a rebalancing plan you can edit step by step, forecasts the budget, and checks the result against sourced rules.',
       why: 'Resource management ranks as the top PMO challenge in survey data, and capacity questions recur across every tool community we sampled.',
       uses: ['Workload report', 'Project Budget', 'Per-user cost and billing rates', 'Timesheets with approval'],
-      tool: 'tools/cost-capacity.html', toolLabel: 'Try the planner', file: 'skills/cost-capacity-optimization/SKILL.md' },
+      basis: 'Checked against PMI · AACE · APM · ISO 21502',
+      tool: 'tools/cost-capacity.html', toolLabel: 'Try the planner', page: 'skills/cost-capacity-optimization.html',
+      file: 'skills/cost-capacity-optimization/SKILL.md' },
     { id: 'weekly-status', cat: 'Reporting', status: 'next', title: 'Weekly status report',
       short: 'Turns raw project state into a RAG update shaped for whoever reads it.',
       long: 'Classifies each task as shipped, in flight, slipped or blocked, writes the update for its audience, and posts it to the project feed on approval.',
@@ -320,11 +175,12 @@ footer { padding: 28px 0 44px; border-top: 1px solid var(--line); display: flex;
     $('gallery').innerHTML = list.map(function (sk) {
       var live = sk.status === 'live';
       var acts = live
-        ? '<a class="btn primary" href="' + esc(sk.tool) + '">' + esc(sk.toolLabel) + '</a><button class="btn" data-open="install" data-id="' + sk.id + '">Install</button>'
+        ? '<a class="btn primary" href="' + esc(sk.tool) + '" target="_blank" rel="noopener">' + esc(sk.toolLabel) + '</a><a class="btn" href="' + esc(sk.page) + '">Install</a>'
         : '<button class="btn" disabled>Coming soon</button><button class="btn" data-open="request" data-id="' + sk.id + '">Request it</button>';
       return '<article class="tile ' + (live ? 'live' : 'soon') + '" tabindex="0" data-open="skill" data-id="' + sk.id + '">' +
         '<div class="tile-top"><span class="eyebrow">' + esc(sk.cat) + '</span>' + tag(sk) + '</div>' +
-        '<h3>' + esc(sk.title) + '</h3><p>' + esc(sk.short) + '</p><div class="tile-acts">' + acts + '</div></article>';
+        '<h3>' + esc(sk.title) + '</h3><p>' + esc(sk.short) + '</p>' +
+        (sk.basis ? '<span class="basis">' + esc(sk.basis) + '</span>' : '') + '<div class="tile-acts">' + acts + '</div></article>';
     }).join('') +
       '<article class="tile ask" tabindex="0" data-open="request"><div><span class="eyebrow">Missing something?</span>' +
       '<h3 style="margin-top:14px">Request a skill</h3><p style="margin-top:10px">Tell us the PM job you want an agent to do well.</p></div>' +
@@ -353,20 +209,73 @@ footer { padding: 28px 0 44px; border-top: 1px solid var(--line); display: flex;
       '<p class="why">' + esc(sk.why) + '</p>' +
       (sk.uses ? '<h4>In Zoho Projects it works with</h4><ul>' + sk.uses.map(function (u) { return '<li>' + esc(u) + '</li>'; }).join('') + '</ul>' : '') +
       '<div class="acts">' + (live
-        ? '<a class="btn primary" href="' + esc(sk.tool) + '">' + esc(sk.toolLabel) + '</a>' +
-          '<button class="btn" data-open="install" data-id="' + sk.id + '">Install</button>' +
-          '<a class="btn ghost" href="' + esc(sk.file) + '">Read the skill</a>'
+        ? '<a class="btn primary" href="' + esc(sk.tool) + '" target="_blank" rel="noopener">' + esc(sk.toolLabel) + '</a>' +
+          '<a class="btn" href="' + esc(sk.page) + '">Install and set up</a>' +
+          '<a class="btn ghost" href="' + esc(sk.page) + '#sources">Where its rules come from</a>'
         : '<button class="btn primary" data-open="request" data-id="' + sk.id + '">Request this skill</button>') + '</div>' +
       (live ? '' : '<p class="fine">Not built yet. Requests decide what gets built next.</p>'));
   }
 
-  function showInstall(sk) {
-    open('<span class="eyebrow">Install</span><h2>' + esc(sk ? sk.title : 'PM Skills') + '</h2>' +
-      '<p>It runs inside your own AI subscription. One plugin carries the skill and the Zoho Projects layer it acts through.</p>' +
-      '<h4>Claude Code</h4><pre><code>' + esc(INSTALL) + '</code></pre>' +
-      '<button class="btn primary" data-copy="' + esc(INSTALL) + '">Copy both commands</button>' +
-      '<h4>Claude.ai · ChatGPT · Gemini</h4><ul><li>Download the <a href="' + esc((sk && sk.file) || 'skills/cost-capacity-optimization/SKILL.md') + '" download>skill file</a></li>' +
-      '<li>Settings → Capabilities → Skills → add it and upload the file</li><li>Ask a PM question — it activates on its own</li></ul>');
+  /* ---------- agents ----------
+   * The headline word cycles on its own and drives nothing. The Install section
+   * follows only what the visitor picks: in the Explore menu, or on its own tabs. */
+
+  var A = window.PMAgents;
+  var agent = A.chosen() || A.list[0];
+  var picked = !!A.chosen(), timer = null;
+
+  function renderInstall() {
+    $('agent-tabs').innerHTML = A.tabs(agent.id);
+    $('install-agent').textContent = agent.name;
+    var live = SKILLS.filter(function (s) { return s.status === 'live'; });
+    $('install-steps').innerHTML =
+      '<div class="box"><span class="no">01</span><h3>Get the skill</h3>' +
+        (agent.plugin
+          ? '<p><b>' + agent.pluginWhere + ':</b> add the catalogue once. It brings every live skill.</p><pre><code>' + esc(agent.plugin) + '</code></pre>' +
+            '<button class="btn" data-copy="' + esc(agent.plugin) + '" style="margin-bottom:16px;align-self:flex-start">Copy both commands</button>' +
+            '<p><b>Otherwise:</b> download a skill\'s package from its page. ' + esc(agent.upload) + '</p>'
+          : '<p>Each skill is one folder in the GitHub repository. Download its package from the skill\'s page.</p><p>' + esc(agent.upload) + '</p>') +
+        (agent.uploadNote ? '<p>' + esc(agent.uploadNote) + '</p>' : '') +
+        '<div class="btn-line"><a class="btn" href="' + A.repo + '" target="_blank" rel="noopener">Open the GitHub repository</a></div></div>' +
+      '<div class="box"><span class="no">02</span><h3>Connect Zoho Projects</h3>' +
+        '<p>In Zoho Projects, turn on <b>MCP Access</b> (Portal Configuration → AI Hub) and <b>API Access</b> (Developer Space).</p>' +
+        '<p>Then in ' + agent.name + ':</p><div class="path">' + esc(agent.connect) + '</div>' +
+        '<div class="btn-line"><a class="btn" href="' + A.zohoGuide + '" target="_blank" rel="noopener">Zoho\'s connection guide</a></div></div>' +
+      '<div class="box"><span class="no">03</span><h3>Ask</h3><p>Start a new chat with the connector switched on and ask in your own words. Each skill\'s page lists what to ask and what to expect.</p>' +
+        '<ul class="pages">' + live.map(function (sk) {
+          return '<li><a href="' + esc(sk.page) + '"><span>' + esc(sk.title) + '</span><span>Detailed steps →</span></a></li>';
+        }).join('') + '</ul></div>';
+  }
+
+  function renderMenu() {
+    $('explore-menu').innerHTML = '<span class="eyebrow">Which AI agent do you use?</span>' +
+      A.list.map(function (a) {
+        return '<button type="button" role="menuitem" class="' + (picked && a.id === agent.id ? 'on' : '') + '" data-pick="' + a.id + '">' + a.name + '</button>';
+      }).join('') + '<hr><button type="button" role="menuitem" class="plain" data-pick="">Just show me the skills</button>';
+  }
+  function toggleMenu(open) {
+    var wrap = $('explore');
+    var on = open == null ? !wrap.classList.contains('open') : open;
+    wrap.classList.toggle('open', on);
+    $('explore-btn').setAttribute('aria-expanded', on ? 'true' : 'false');
+    if (on) { renderMenu(); var first = $('explore-menu').querySelector('button'); if (first) first.focus(); }
+  }
+
+  function setWord(name) {
+    var word = $('agent-word');
+    if (word.textContent === name) return;
+    word.classList.add('swap');
+    setTimeout(function () { word.textContent = name; word.classList.remove('swap'); }, 220);
+  }
+
+  /** The visitor chose an agent: remember it, name it in the Install section, stop the headline cycling. */
+  function chooseAgent(id) {
+    var next = A.choose(id);
+    if (!next) return;
+    agent = next; picked = true;
+    clearInterval(timer);
+    setWord(agent.name);
+    renderInstall();
   }
 
   function showRequest(sk) {
@@ -396,7 +305,7 @@ footer { padding: 28px 0 44px; border-top: 1px solid var(--line); display: flex;
   function activate(el) {
     var what = el.getAttribute('data-open'), sk = byId(el.getAttribute('data-id'));
     if (what === 'skill' && sk) showSkill(sk);
-    else if (what === 'install') showInstall(sk);
+
     else if (what === 'request') showRequest(sk);
   }
 
@@ -406,6 +315,17 @@ footer { padding: 28px 0 44px; border-top: 1px solid var(--line); display: flex;
     if (t.closest('[data-send]')) { sendRequest(); return; }
     var c = t.closest('[data-copy]');
     if (c) { window.PMUI.copy(c.getAttribute('data-copy')).then(function () { window.PMUI.copied(c); }, function () {}); return; }
+    if (t.closest('#explore-btn')) { toggleMenu(); return; }
+    var pick = t.closest('[data-pick]');
+    if (pick) {
+      if (pick.getAttribute('data-pick')) chooseAgent(pick.getAttribute('data-pick'));
+      toggleMenu(false);
+      $('skills').scrollIntoView({ behavior: 'smooth' });
+      return;
+    }
+    if (!t.closest('#explore')) toggleMenu(false);
+    var ag = t.closest('[data-agent]');
+    if (ag) { chooseAgent(ag.getAttribute('data-agent')); return; }
     var f = t.closest('#filters button');
     if (f) {
       filter = f.getAttribute('data-f');
@@ -418,16 +338,26 @@ footer { padding: 28px 0 44px; border-top: 1px solid var(--line); display: flex;
     if (o) activate(o);
   });
   document.addEventListener('keydown', function (ev) {
-    if (ev.key === 'Escape') close();
+    if (ev.key === 'Escape') { close(); if ($('explore').classList.contains('open')) { toggleMenu(false); $('explore-btn').focus(); } }
     if ((ev.key === 'Enter' || ev.key === ' ') && ev.target.classList && ev.target.classList.contains('tile')) {
       ev.preventDefault(); activate(ev.target);
     }
   });
 
-  var live = SKILLS.filter(function (s) { return s.status === 'live'; }).length;
-  $('gal-title').textContent = live + (live === 1 ? ' skill live, ' : ' skills live, ') + (SKILLS.length - live) + ' on the way.';
   $('theme-slot').innerHTML = window.PMUI.themeToggle();
   renderGallery();
+  renderInstall();
+  if (picked) $('agent-word').textContent = agent.name;
+
+  // Until the visitor picks an agent, the headline cycles through them. No motion if they asked for none.
+  if (!picked && !(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches)) {
+    var shown = 0;
+    timer = setInterval(function () {
+      if (document.hidden || $('mask').classList.contains('on')) return;
+      shown = (shown + 1) % A.list.length;
+      setWord(A.list[shown].name);
+    }, 2600);
+  }
 })();
 </script>
 </body>

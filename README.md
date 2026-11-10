@@ -58,10 +58,10 @@ See [`knowledge/`](knowledge/) — every benchmark carries its provenance (`sour
 Installing the `pmskills` plugin brings both the `cost-capacity-optimization` skill and the
 `zoho-projects-api` reference layer it acts through.
 
-### Claude.ai · ChatGPT · Gemini
+### Claude app · ChatGPT · Gemini · Cursor · Copilot
 
-Upload the skill's `SKILL.md` as a skill/custom instruction. See [docs/INSTALL.md](docs/INSTALL.md)
-for per-platform steps.
+Upload or unzip the two skill packages in [`site/downloads/`](site/downloads/), then connect Zoho
+Projects in your agent. See [docs/INSTALL.md](docs/INSTALL.md) for the steps.
 
 ## Repository layout
 
@@ -77,7 +77,8 @@ site/
   tools/cost-capacity.*                 this skill's planner: problem -> context (asked one question at a
                                         time) -> team & work -> plan -> validate -> land
 dist/capacity-cost-planner.html         the planner as ONE self-contained file — download and double-click
-build/                                  bundle.js (engine -> browser), stamp.js (cache-busting), standalone.js (-> dist/)
+build/                                  bundle.js (engine -> browser), package.js (skills -> site copies and zips),
+                                        stamp.js (cache-busting), standalone.js (-> dist/)
 docs/                                   install and contribution guides
 ```
 

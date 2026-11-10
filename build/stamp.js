@@ -9,8 +9,8 @@ const path = require('path');
 const crypto = require('crypto');
 
 const site = path.join(__dirname, '..', 'site');
-const pages = [path.join(site, 'index.html')]
-  .concat(fs.readdirSync(path.join(site, 'tools')).filter(f => f.endsWith('.html')).map(f => path.join(site, 'tools', f)));
+const htmlIn = dir => fs.readdirSync(path.join(site, dir)).filter(f => f.endsWith('.html')).map(f => path.join(site, dir, f));
+const pages = [path.join(site, 'index.html')].concat(htmlIn('tools'), htmlIn('skills'));
 
 for (const file of pages) {
   let count = 0;

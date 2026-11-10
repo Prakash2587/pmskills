@@ -43,8 +43,6 @@ h3.sec { font: 500 11px/1.4 var(--mono); letter-spacing: 0.09em; text-transform:
 .tpl-meta { display: flex; gap: 6px; flex-wrap: wrap; }
 .chip { background: var(--chip); color: var(--muted); padding: 3px 8px; border-radius: 4px; font: 400 11px var(--mono); }
 .chip.accent { background: var(--accent-soft); color: var(--accent-text); }
-.under-link { margin-top: 22px; font-size: 14px; }
-.under-link a { cursor: pointer; }
 
 /* Conversation — one question at a time, answers collapse into a transcript */
 .q-progress { display: flex; align-items: center; gap: 12px; margin: -14px 0 26px; font: 400 11.5px var(--mono); color: var(--faint); }

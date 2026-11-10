@@ -76,9 +76,7 @@
           sc.chips.map(function (c) { return '<span class="chip accent">' + esc(c) + '</span>'; }).join('') +
           '<span class="chip">' + sc.people.length + ' people</span><span class="chip">' + sc.work.length + ' work items</span>' +
           '</div></div>';
-      }).join('') + '</div>' +
-      '<p class="under-link">' + (s.scenario === 'blank' ? '<b>Starting with an empty team.</b> ' : '') +
-      '<a data-act="scenario" data-k="blank">Or start with an empty team and enter everything yourself →</a></p>';
+      }).join('') + '</div>';
   }
 
   /* ---------- 2. Context — asked one question at a time ---------- */
@@ -334,7 +332,8 @@
         '<div><b>Keep real names out of it</b><span>People show as “' + esc(inp.people[0] && gen ? inp.people[0].name : 'Consultant #1') +
         '” and projects as “Project #1” everywhere, including the report. Untick to bring your names back.</span></div></label>' +
       '<p class="aside">Names and project names are optional either way — leave one blank and it shows as a role and number.</p>' +
-      '<h3 class="sec" style="margin-top:28px">People</h3>' +
+      '<div class="sec-row" style="margin-top:28px"><h3 class="sec">People</h3>' +
+        (s.people.length || s.work.length ? '<button class="btn small ghost" data-act="clear-sample">Clear all and start empty</button>' : '') + '</div>' +
       '<div class="table-wrap"><table class="grid"><thead><tr><th>Name <i>optional</i></th><th>Role</th><th>Capacity <i>h/week</i></th><th>Cost / hour <i>' + cur + '</i></th>' +
         (int ? '' : '<th>Bill / hour <i>' + cur + '</i></th>') + '<th></th></tr></thead>' +
         '<tbody id="tb-people">' + (people || '<tr><td colspan="6" class="plan-empty">No people yet. Add the first one — a role is enough.</td></tr>') + '</tbody></table></div>' +
@@ -486,6 +485,7 @@
 
   /* ---------- 6. Land ---------- */
 
+  var ZOHO_MCP_GUIDE = 'https://help.zoho.com/portal/en/kb/projects/settings-in-zoho-projects/developer-space/developer-space-folder/articles/zoho-projects-mcp';
   var INSTALL_CMDS = '/plugin marketplace add Prakash2587/pmskills\n/plugin install pmskills@pmskills';
 
   // The route to a working setup. A new user has one step more than an existing one.
@@ -495,8 +495,10 @@
       route.push({ key: 'signup', act: 'try-zoho', btn: 'Try on Zoho Projects', title: 'Create your Zoho Projects portal',
         note: 'Your plan stays saved here while you sign up.' });
     }
-    route.push({ key: 'install', act: 'install', btn: 'Install the skill', title: 'Add the PM Skills plugin to your AI agent',
-      note: 'Claude, ChatGPT or Gemini. Two commands, or one file upload.' });
+    route.push({ key: 'install', act: 'install', btn: 'Install the skill', title: 'Add the skill to your AI agent',
+      note: 'Claude, ChatGPT, Gemini and others. Two commands, or two small uploads.' });
+    route.push({ key: 'connect', act: 'connect', btn: 'Connect Zoho Projects', title: 'Let the agent reach your portal',
+      note: 'Switch on MCP access in Zoho Projects, then add its connector in your agent.' });
     route.push({ key: 'prompt', act: 'copy-prompt', btn: 'Copy the hand-off prompt', title: 'Paste your plan into the agent',
       note: 'It checks the real numbers, then asks before each change.' });
     return route;
@@ -726,6 +728,10 @@
       relabel(api.state);
       teamTotals(api.state);
     },
+    'clear-sample': function (el, api) {
+      if (!window.confirm('Remove every person and work item, and start with an empty team?')) return;
+      api.set(function (s) { s.people = []; s.work = []; s.steps = []; s.refineLog = []; s.planOpts = {}; dirty(s); });
+    },
     'add-person': function (el, api) {
       api.set(function (s) {
         s.people.push({ id: 'p' + (s.seq++), name: '', role: '', capacity: P.weekHours(s.org).hours, costRate: 0, billRate: 0 });
@@ -849,9 +855,24 @@
         '<p>It runs inside your own AI subscription. One plugin carries the skill and the Zoho Projects layer it acts through.</p>' +
         '<h4>Claude Code</h4><div class="code">' + esc(INSTALL_CMDS) + '</div>' +
         '<div class="btn-row"><button class="btn primary" data-act="copy-text" data-text="' + esc(INSTALL_CMDS) + '">Copy both commands</button></div>' +
-        '<h4>Claude.ai · ChatGPT · Gemini</h4>' +
-        '<p style="margin-top:10px">Download the skill file, then add it under Settings → Capabilities → Skills.</p>' +
-        '<div class="btn-row"><a class="btn" href="../index.html#install">All install options</a></div>');
+        '<h4>Claude app · ChatGPT · Gemini · others</h4>' +
+        '<p style="margin-top:10px">Download both packages and upload each where your agent manages skills.</p>' +
+        '<div class="btn-row" style="margin-top:0"><a class="btn" href="../downloads/cost-capacity-optimization.zip" download>cost-capacity-optimization.zip</a>' +
+        '<a class="btn" href="../downloads/zoho-projects-api.zip" download>zoho-projects-api.zip</a></div>' +
+        '<div class="btn-row"><a class="btn ghost" href="../skills/cost-capacity-optimization.html#install" target="_blank" rel="noopener">Detailed steps for each agent →</a></div>');
+    },
+    connect: function (el, api) {
+      api.set(function (s) { s.landDone = s.landDone || {}; s.landDone.connect = true; });
+      api.modal('<h3>Connect Zoho Projects to your agent</h3>' +
+        '<p>The agent works through your own Zoho Projects sign-in. Nothing passes through this page.</p>' +
+        '<ol class="setup">' +
+          '<li><b>Turn on MCP Access in Zoho Projects</b>Portal Configuration → AI Hub → MCP Access.</li>' +
+          '<li><b>Turn on API Access</b>Developer Space → API Access &amp; Mobile Access → enable → Update.</li>' +
+          '<li><b>Add the Zoho Projects connector in your agent</b>Claude and Gemini list it under Connectors. ChatGPT, Cursor and VS Code take your portal\'s MCP server URL.</li>' +
+          '<li><b>Start a new chat with the connector switched on</b>Approve the Zoho sign-in when it asks.</li>' +
+        '</ol>' +
+        '<div class="btn-row" style="margin-top:0"><a class="btn primary" href="' + ZOHO_MCP_GUIDE + '" target="_blank" rel="noopener">Open Zoho\'s connection guide</a></div>' +
+        '<p style="margin-top:16px">If the agent cannot reach your portal, the skill walks you through these same steps before it does anything else.</p>');
     },
     'copy-text': function (el, api) {
       window.PMUI.copy(el.getAttribute('data-text')).then(function () { window.PMUI.copied(el); },
