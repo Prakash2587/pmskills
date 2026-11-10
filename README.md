@@ -23,7 +23,7 @@ and tested.
    prioritised action plan.
 4. **Existing Zoho user:** with the Zoho Projects MCP connected, the skill carries the plan out —
    reassigns tasks, revises budgets, posts the summary — **confirming every write first**.
-   **New user:** try the [web assessment](site/tools/cost-capacity.html) with no account, download the
+   **New user:** build a plan in the [web planner](site/tools/cost-capacity.html) with no account, export the
    report, or spin up Zoho Projects to act on it.
 
 No model runs on our servers, no third party holds your token, and no write happens without an
@@ -69,14 +69,24 @@ for per-platform steps.
 skills/
   cost-capacity-optimization/SKILL.md   the judgement: what to assess, what to change
   zoho-projects-api/SKILL.md            the implementation layer: how to read and write Zoho Projects
-knowledge/                              sourced benchmarks, doctrine, practitioner patterns (data only)
-engine/                                 deterministic assessment engine + tests (powers the web tool)
-site/                                   landing page + no-account web assessment (deployed on Catalyst)
+knowledge/                              sourced benchmarks, doctrine, practitioner patterns, catalogue (data only)
+engine/                                 deterministic engine + tests (planner.js powers the web tool)
+site/
+  index.html                            landing page
+  wizard/                               reusable six-step wizard shell — shared by every skill's tool
+  tools/cost-capacity.*                 this skill's planner: problem -> context -> team & work -> plan -> validate -> land
+dist/capacity-cost-planner.html         the planner as ONE self-contained file — download and double-click
+build/                                  bundle.js (engine -> browser), standalone.js (-> dist/)
 docs/                                   install and contribution guides
 ```
 
 The skill is portable markdown and runs on any agent that reads `SKILL.md`. The `engine/` and `site/`
 exist to serve the new-user, no-account path; the skill itself needs neither.
+
+### Try the planner without installing anything
+
+Open the [hosted planner](https://pmskills-920403142.development.catalystserverless.com/app/tools/cost-capacity.html),
+or download [`dist/capacity-cost-planner.html`](dist/capacity-cost-planner.html) and open it — it works offline.
 
 ## License
 
