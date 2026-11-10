@@ -104,11 +104,87 @@ h3.sec { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; colo
   border-radius: 8px; font-size: 12px; color: var(--muted); }
 .summary-line b { color: var(--ink); }
 
+/* Conversation — one question at a time, answers collapse into a transcript */
+.q-progress { display: flex; align-items: center; gap: 10px; margin: -6px 0 18px; font-size: 12px; color: var(--muted); }
+.q-progress-bar { flex: 1; max-width: 260px; height: 4px; background: var(--chip); border-radius: 2px; overflow: hidden; }
+.q-progress-bar i { display: block; height: 100%; background: var(--accent); border-radius: 2px; transition: width 0.25s ease; }
+.convo { max-width: 780px; }
+.q-row { display: grid; grid-template-columns: 20px 150px 1fr auto; gap: 10px; align-items: baseline; padding: 9px 12px;
+  border-radius: 8px; cursor: pointer; font-size: 13.5px; }
+.q-row:hover { background: var(--soft); }
+.q-tick { color: var(--ok); font-weight: 700; font-size: 12px; }
+.q-label { color: var(--muted); font-size: 12px; }
+.q-answer { color: var(--ink); min-width: 0; }
+.q-answer b { font-weight: 600; }
+.q-change { color: var(--accent); font-size: 12px; opacity: 0; }
+.q-row:hover .q-change, .q-row:focus .q-change { opacity: 1; }
+.q-card { display: grid; grid-template-columns: 44px 1fr; gap: 6px; margin: 10px 0; padding: 22px 22px 20px 16px;
+  border: 1px solid var(--line); border-left: 3px solid var(--accent); border-radius: 12px; background: #fff;
+  animation: q-in 0.22s ease; }
+@keyframes q-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .q-card { animation: none; } .q-progress-bar i { transition: none; } }
+.q-num { color: var(--accent); font-weight: 600; font-size: 14px; line-height: 30px; white-space: nowrap; }
+.q-num span { margin-left: 3px; }
+.q-body { min-width: 0; }
+h3.q-prompt { margin: 0 0 6px; font-size: 21px; font-weight: 600; line-height: 1.35; letter-spacing: -0.01em; }
+h3.q-prompt em { font-style: normal; font-size: 11px; font-weight: 600; color: var(--muted); background: var(--chip);
+  padding: 2px 8px; border-radius: 999px; vertical-align: middle; letter-spacing: 0.3px; text-transform: uppercase; }
+p.q-hint { margin: 0 0 14px; color: var(--muted); font-size: 13px; max-width: 600px; }
+.q-control { margin: 14px 0 4px; }
+.q-control input[type=text], .q-control input[type=number], .q-control input[type=email], .q-control select {
+  padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; font-size: 15px; font-family: inherit;
+  background: #fff; color: var(--ink); max-width: 100%; }
+.q-control input[type=text], .q-control select { width: 100%; max-width: 460px; }
+.q-control input[type=number] { width: 110px; }
+.q-control input:focus, .q-control select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.q-note { margin-top: 10px; font-size: 12.5px; color: var(--muted); max-width: 600px; }
+.q-note b { color: var(--ink); font-weight: 600; }
+.q-inline { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 14px; color: var(--muted); margin-top: 12px; }
+.q-error { color: var(--err); font-size: 12.5px; min-height: 18px; margin-top: 6px; }
+.q-actions { display: flex; align-items: center; gap: 10px; margin-top: 4px; flex-wrap: wrap; }
+.q-actions .btn.primary { padding: 8px 18px; font-weight: 600; }
+.q-enter { font-size: 12px; color: var(--muted); }
+.q-done { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; margin-top: 14px;
+  padding: 16px 18px; border: 1px solid #cde4d5; background: #f2faf5; border-radius: 12px; font-size: 14px; }
+.q-done b { font-weight: 600; }
+
+/* Choice cards and chips used inside questions */
+.choices { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.choice { display: grid; grid-template-columns: 24px 1fr; gap: 10px; align-items: start; text-align: left; padding: 11px 12px;
+  border: 1px solid var(--line); border-radius: 9px; background: #fff; cursor: pointer; font-family: inherit; color: var(--ink); }
+.choice:hover { border-color: #c9c9c3; background: var(--soft); }
+.choice.on { border-color: var(--accent); background: var(--accent-soft); box-shadow: 0 0 0 2px var(--accent-soft); }
+.choice kbd { width: 22px; height: 22px; border: 1px solid var(--line); border-radius: 5px; display: grid; place-items: center;
+  font-family: inherit; font-size: 11px; font-weight: 600; color: var(--muted); background: #fff; }
+.choice.on kbd { background: var(--accent); border-color: var(--accent); color: #fff; }
+.choice b { display: block; font-size: 14px; font-weight: 600; }
+.choice span { display: block; font-size: 12px; color: var(--muted); margin-top: 2px; }
+.pills { display: flex; gap: 8px; flex-wrap: wrap; }
+.pill-btn { padding: 8px 14px; border: 1px solid var(--line); border-radius: 999px; background: #fff; cursor: pointer;
+  font-family: inherit; font-size: 13.5px; color: var(--ink); }
+.pill-btn:hover { border-color: #c9c9c3; background: var(--soft); }
+.pill-btn.on { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+.pill-btn small { color: var(--muted); font-weight: 400; margin-left: 4px; }
+.money-in { display: inline-flex; align-items: center; border: 1px solid var(--line); border-radius: 8px; background: #fff; overflow: hidden; }
+.money-in:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.money-in > span { padding: 0 10px; color: var(--muted); font-size: 14px; background: var(--soft); align-self: stretch;
+  display: grid; place-items: center; border-right: 1px solid var(--line); white-space: nowrap; }
+.money-in input[type=number] { border: none; box-shadow: none !important; width: 150px; border-radius: 0; }
+.q-pair { display: flex; gap: 18px; flex-wrap: wrap; }
+.q-pair label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 5px; }
+
 /* Editable tables */
 .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; }
 table.grid { width: 100%; border-collapse: collapse; min-width: 640px; }
 table.grid th { background: var(--soft); font-size: 11px; text-transform: uppercase; letter-spacing: 0.4px;
   color: var(--muted); font-weight: 600; text-align: left; padding: 8px 8px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+table.grid th i { font-style: normal; font-weight: 400; text-transform: none; letter-spacing: 0; opacity: 0.8; }
+table.grid td.cell input:disabled { background: var(--soft); color: var(--muted); }
+.privacy { display: flex; gap: 10px; align-items: flex-start; padding: 11px 14px; margin: 0 0 16px; border: 1px dashed #d5d4cd;
+  border-radius: 10px; background: var(--soft); font-size: 13px; cursor: pointer; }
+.privacy input { margin: 3px 0 0; }
+.privacy b { font-weight: 600; }
+.privacy span { display: block; color: var(--muted); font-size: 12px; margin-top: 1px; }
 table.grid td { padding: 5px 6px; border-bottom: 1px solid var(--line); vertical-align: middle; }
 table.grid tr:last-child td { border-bottom: none; }
 table.grid td.cell input, table.grid td.cell select { padding: 6px 8px; }
@@ -237,6 +313,29 @@ ol.setup li em { display: block; font-style: normal; font-size: 11px; color: var
   font-family: "SF Mono", Menlo, monospace; font-size: 11px; color: var(--muted); max-height: 320px; overflow: auto;
   white-space: pre; margin-top: 10px; }
 
+/* Land: what in Zoho Projects does this */
+.feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 10px; margin-bottom: 18px; }
+.feature { padding: 14px; border: 1px solid var(--line); border-radius: 10px; background: #fff; }
+.feature h4 { margin: 0 0 3px; font-size: 14px; }
+.feature .tier { display: inline-block; font-size: 10.5px; color: var(--accent); background: var(--accent-soft);
+  padding: 2px 8px; border-radius: 999px; margin-bottom: 7px; }
+.feature p { margin: 0 0 8px; font-size: 12.5px; color: var(--muted); }
+.feature .for { font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.4px; color: var(--muted); font-weight: 600;
+  border-top: 1px solid var(--line); padding-top: 8px; margin-bottom: 4px; }
+.feature ul { margin: 0; padding: 0 0 0 16px; font-size: 12px; color: var(--ink); }
+.feature ul li { margin-bottom: 3px; }
+
+/* Land: the report gate */
+.gate input[type=email] { width: 100%; padding: 9px 11px; border: 1px solid var(--line); border-radius: 8px; font-size: 14px;
+  font-family: inherit; margin-bottom: 8px; }
+.gate input[type=email]:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.gate-error { color: var(--err); font-size: 12px; min-height: 16px; margin-bottom: 6px; }
+.gate-ok { font-size: 12px; color: var(--muted); margin-top: 10px; }
+.gate-ok b { color: var(--ink); font-weight: 600; }
+.gate-ok a { cursor: pointer; }
+.locked { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+.locked span { font-size: 11.5px; padding: 3px 9px; border-radius: 999px; background: var(--chip); color: var(--muted); }
+
 /* Footer nav */
 .foot-nav { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 22px;
   padding-top: 18px; border-top: 1px solid var(--line); }
@@ -256,7 +355,13 @@ ol.setup li em { display: block; font-style: normal; font-size: 11px; color: var
 .toast.on { opacity: 1; }
 
 @media (max-width: 860px) {
-  .templates, .form-grid, .val-grid, .land-grid { grid-template-columns: 1fr; }
+  .templates, .form-grid, .val-grid, .land-grid, .choices { grid-template-columns: 1fr; }
+  .q-row { grid-template-columns: 20px 1fr auto; }
+  .q-row .q-label { display: none; }
+  .q-change { opacity: 1; }
+  .q-card { grid-template-columns: 1fr; padding: 18px 16px; }
+  .q-num { line-height: 1.2; }
+  h3.q-prompt { font-size: 18px; }
   .stepper { grid-template-columns: repeat(3, 1fr) !important; }
   .load-row { grid-template-columns: 1fr; gap: 6px; }
   .checkbox-grid { grid-template-columns: repeat(2, 1fr); }
@@ -986,6 +1091,24 @@ const WEEK_PATTERNS = [
 
 const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
+/* --- currencies -----------------------------------------------------------
+ * The org stores the ISO `code`; every figure is printed through the one
+ * formatter in engine/planner.js, so a plan cannot show two currencies. */
+
+const CURRENCIES = [
+  { code: 'USD', symbol: '$', name: 'US dollar' },
+  { code: 'EUR', symbol: '€', name: 'Euro' },
+  { code: 'GBP', symbol: '£', name: 'Pound sterling' },
+  { code: 'INR', symbol: '₹', name: 'Indian rupee' },
+  { code: 'AUD', symbol: 'A$', name: 'Australian dollar' },
+  { code: 'CAD', symbol: 'C$', name: 'Canadian dollar' },
+  { code: 'SGD', symbol: 'S$', name: 'Singapore dollar' },
+  { code: 'AED', symbol: 'AED ', name: 'UAE dirham' },
+  { code: 'SAR', symbol: 'SAR ', name: 'Saudi riyal' },
+  { code: 'JPY', symbol: '¥', name: 'Japanese yen' },
+  { code: 'ZAR', symbol: 'R', name: 'South African rand' },
+];
+
 /* --- Zoho Projects features a finding binds to ------------------------------
  * Only features confirmed in the API research. `tier` is the standalone gating. */
 
@@ -1120,7 +1243,7 @@ const SCENARIOS = [
   },
 ];
 
-module.exports = { INDUSTRIES, WEEK_PATTERNS, DAY_NAMES, ZOHO_FEATURES, SCENARIOS };
+module.exports = { INDUSTRIES, WEEK_PATTERNS, DAY_NAMES, CURRENCIES, ZOHO_FEATURES, SCENARIOS };
 
   });
 
@@ -1917,9 +2040,47 @@ const r1 = n => Math.round(n * 10) / 10;
 const clone = x => JSON.parse(JSON.stringify(x));
 const fmtH = n => `${r1(n)}h`;
 
+/* The one place a figure becomes text, so a plan cannot show two currencies.
+ * `org.currency` is an ISO code from the catalogue; anything else is used as a
+ * literal prefix. */
+function currencySymbol(org = {}) {
+  const cur = org.currency || '';
+  const known = C.CURRENCIES.find(c => c.code === cur);
+  return known ? known.symbol : cur;
+}
 function money(input, n) {
-  const cur = (input.org && input.org.currency) || '';
-  return `${cur}${Math.round(n).toLocaleString('en-US')}`;
+  return `${currencySymbol(input.org)}${Math.round(num(n)).toLocaleString('en-US')}`;
+}
+
+const isInternal = input => !!input.org && input.org.billingModel === 'internal';
+
+/* --- labels ----------------------------------------------------------------
+ * Names are optional. A blank name becomes a generic reference built from the
+ * role ("Consultant #3"), a blank project becomes "Project #2". With
+ * org.genericLabels on, EVERY person and project is referred to that way, so a
+ * plan can be built and shared without a single real name in it. */
+function withLabels(input) {
+  const generic = !!(input.org && input.org.genericLabels);
+  const perRole = new Map();
+  const people = input.people.map(p => {
+    const role = (p.role || '').trim();
+    const n = (perRole.get(role.toLowerCase()) || 0) + 1;
+    perRole.set(role.toLowerCase(), n);
+    const typed = (p.name || '').trim();
+    return { ...p, name: generic || !typed ? `${role || 'Person'} #${n}` : typed };
+  });
+
+  const projects = new Map();
+  for (const w of input.work) {
+    const key = (w.project || '').trim();
+    if (!projects.has(key)) projects.set(key, `Project #${projects.size + 1}`);
+  }
+  const work = input.work.map((w, i) => {
+    const key = (w.project || '').trim();
+    return { ...w, title: (w.title || '').trim() || `Work item #${i + 1}`,
+      project: generic || !key ? projects.get(key) : key };
+  });
+  return { ...input, people, work };
 }
 
 function index(people) { return new Map(people.map(p => [p.id, p])); }
@@ -2154,6 +2315,11 @@ function billableNote(input, load) {
   const total = load.totals.allocated;
   if (!total) return null;
   const ind = C.INDUSTRIES.find(i => i.key === input.org.industry);
+  if (isInternal(input)) {
+    return { id: 'billable', grade: 'reported', feature: 'timesheets',
+      headline: 'Billable ratio is left out — this work is not client-billed',
+      detail: 'With no client paying by the hour, a billable percentage would be invented. Capacity and delivery predictability are the measures that matter here.' };
+  }
   if (ind && ind.billable === false) {
     return { id: 'billable', grade: 'reported', feature: 'timesheets',
       headline: `Billable ratio is not a useful measure for ${ind.label.toLowerCase()}`,
@@ -2167,6 +2333,8 @@ function billableNote(input, load) {
 }
 
 function budgetView(input, weeklyCost) {
+  // Internal work is planned on capacity; the tool does not ask for a budget there.
+  if (isInternal(input)) return null;
   const b = input.budget || {};
   const amount = num(b.amount);
   if (!(amount > 0)) return null;
@@ -2408,7 +2576,7 @@ function buildZohoPayload(input, steps = []) {
       name: w.title,
       owner: owner ? owner.name : null,
       work_hours_per_week: hhmm(w.hours),
-      billing_status: w.billable ? 'Billable' : 'Non-Billable',
+      billing_status: w.billable && !isInternal(input) ? 'Billable' : 'Non-Billable',
     });
   }
 
@@ -2422,7 +2590,8 @@ function buildZohoPayload(input, steps = []) {
     users: a.applied.people.map(p => ({
       name: p.name, role: p.role, to_be_hired: !!p.isHire || undefined,
       weekly_capacity_hours: num(p.capacity),
-      budget: { cost_per_hour: num(p.costRate) || null, rate_per_hour: num(p.billRate) || null },
+      budget: { cost_per_hour: num(p.costRate) || null,
+        rate_per_hour: isInternal(input) ? null : num(p.billRate) || null },
     })),
     projects: [...projects.entries()].map(([name, tasks]) => ({
       name,
@@ -2431,6 +2600,7 @@ function buildZohoPayload(input, steps = []) {
     })),
     budget: a.budget ? {
       planned_cost: { amount: a.budget.after.amount, currency: input.org.currency || '' },
+      spent_to_date: a.budget.after.spent,
       note: 'Set on the project being tracked; Zoho then reports actual and forecasted cost against it.',
     } : null,
     verify_with: [{ call: 'GET /reports/workload', purpose: 'Confirm Zoho\'s own under / optimal / over verdict matches this plan once time is being logged.' }],
@@ -2458,6 +2628,18 @@ function buildSetupSteps(input, steps = []) {
   out.push({ feature: 'workload', title: 'Open the Workload report',
     detail: 'Zoho labels each person under, optimal or over against the real calendar. That verdict replaces this estimate.' });
   return out.map(s => ({ ...s, featureName: F[s.feature].name, tier: F[s.feature].tier, api: F[s.feature].api }));
+}
+
+/** Findings grouped by the Zoho Projects feature that would show them for real. */
+function buildFeatureMap(input, steps = []) {
+  const out = new Map();
+  for (const f of assess(input, steps).findings) {
+    const z = C.ZOHO_FEATURES[f.feature];
+    if (!z) continue;
+    if (!out.has(f.feature)) out.set(f.feature, { key: f.feature, ...z, covers: [] });
+    out.get(f.feature).covers.push(f.headline);
+  }
+  return [...out.values()];
 }
 
 /** A hand-off for the installed skill: carry the plan out through the user's own MCP. */
@@ -2624,14 +2806,68 @@ function renderReport(input, steps = []) {
 
   L.push('', '## Setting this up in Zoho Projects', '');
   buildSetupSteps(input, steps).forEach((s, i) => L.push(`${i + 1}. **${s.title}** (${s.featureName}) — ${s.detail}`));
+
+  L.push('', '## Where each finding lives in Zoho Projects', '');
+  for (const f of buildFeatureMap(input, steps)) L.push(`- **${f.name}** (${f.tier}) — ${f.does}`);
   return L.join('\n');
 }
 
 module.exports = {
   computeLoad, proposePlan, applyPlan, assess, validate, describeStep, refine,
-  buildZohoPayload, buildSetupSteps, buildAgentPrompt, renderReport, weekHours,
+  buildZohoPayload, buildSetupSteps, buildFeatureMap, buildAgentPrompt, renderReport, weekHours,
+  withLabels, money, currencySymbol,
   REFINE_EXAMPLES, SUSTAINED_HOURS, SUSTAINED_WEEKS,
 };
+
+  });
+
+  def("engine/lead", function (module, exports, require) {
+'use strict';
+/* ============================================================================
+ * Work-email rule for the report gate.
+ * ----------------------------------------------------------------------------
+ * The gate asks for a company address, so free and throwaway mailboxes are
+ * refused by domain. This is a blocklist, not verification: it cannot tell
+ * whether a company domain or a mailbox really exists.
+ * ========================================================================== */
+
+const FREE_DOMAINS = [
+  'gmail.com', 'googlemail.com', 'yahoo.com', 'yahoo.co.in', 'yahoo.co.uk', 'yahoo.in', 'ymail.com', 'rocketmail.com',
+  'outlook.com', 'outlook.in', 'hotmail.com', 'hotmail.co.uk', 'live.com', 'live.in', 'msn.com',
+  'icloud.com', 'me.com', 'mac.com', 'aol.com', 'proton.me', 'protonmail.com', 'pm.me', 'tutanota.com', 'tuta.io',
+  'zoho.com', 'zohomail.com', 'zohomail.in', 'gmx.com', 'gmx.net', 'gmx.de', 'web.de', 'mail.com', 'email.com',
+  'yandex.com', 'yandex.ru', 'mail.ru', 'rediffmail.com', 'fastmail.com', 'hey.com', 'duck.com',
+  'qq.com', '163.com', '126.com', 'sina.com', 'naver.com', 'hanmail.net', 'daum.net',
+  'comcast.net', 'verizon.net', 'att.net', 'sbcglobal.net', 'btinternet.com', 'orange.fr', 'wanadoo.fr', 'free.fr',
+  't-online.de', 'libero.it', 'uol.com.br', 'bol.com.br',
+];
+
+const DISPOSABLE_DOMAINS = [
+  'mailinator.com', 'guerrillamail.com', '10minutemail.com', 'tempmail.com', 'temp-mail.org', 'yopmail.com',
+  'trashmail.com', 'sharklasers.com', 'getnada.com', 'dispostable.com', 'maildrop.cc', 'throwawaymail.com',
+];
+
+const PLACEHOLDER_DOMAINS = ['example.com', 'example.org', 'example.net', 'test.com', 'email.com', 'domain.com'];
+
+const SHAPE = /^[^\s@]+@([a-z0-9](?:[a-z0-9-]*[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)+)$/i;
+
+/** Returns { ok, email, domain, reason }. `reason` is ready to show to a person. */
+function checkWorkEmail(raw) {
+  const email = String(raw == null ? '' : raw).trim().toLowerCase();
+  if (!email) return { ok: false, email, domain: '', reason: 'Enter your work email to unlock the report.' };
+  const m = email.match(SHAPE);
+  if (!m) return { ok: false, email, domain: '', reason: 'That does not look like an email address.' };
+  const domain = m[1];
+  if (FREE_DOMAINS.includes(domain)) {
+    return { ok: false, email, domain, reason: `${domain} is a personal mailbox. Please use your company email.` };
+  }
+  if (DISPOSABLE_DOMAINS.includes(domain) || PLACEHOLDER_DOMAINS.includes(domain)) {
+    return { ok: false, email, domain, reason: `${domain} is not a company mailbox. Please use your company email.` };
+  }
+  return { ok: true, email, domain, reason: '' };
+}
+
+module.exports = { checkWorkEmail, FREE_DOMAINS, DISPOSABLE_DOMAINS };
 
   });
 
@@ -2639,6 +2875,7 @@ module.exports = {
     digest: req('', './engine/digest'),
     recommend: req('', './engine/recommend'),
     planner: req('', './engine/planner'),
+    lead: req('', './engine/lead'),
     knowledge: {
       benchmarks: req('', './knowledge/benchmarks'),
       doctrine: req('', './knowledge/doctrine'),
@@ -2674,13 +2911,33 @@ module.exports = {
  *   data-enter="name"    Enter key
  *   data-drag-id="x" inside data-drop="name"   drag to reorder → actions.name({from, to}, api)
  *
+ * A step can ask its questions one at a time instead of showing a form:
+ *
+ *   api.convo(el, {
+ *     key: 'ctx',                        // state.ctx = { answered: { id: true }, active: id | null }
+ *     title, sub,
+ *     questions: [{
+ *       id, label,                       // label names the answer once it collapses
+ *       prompt, hint, optional,
+ *       body(state)   -> html,           // the control; mark the field to focus with data-autofocus
+ *       answer(state) -> html,           // the answer as a short sentence
+ *       valid(state)  -> true | 'why not',
+ *       onSkip(state)                    // optional questions: clear the value
+ *     }],
+ *     done: html                         // shown once every question is answered
+ *   });
+ *   PMWizard.convoDone(state.ctx, ids)   // for canAdvance
+ *
+ * Inside a question, fields use data-input (so the value is saved as it is typed) and
+ * Enter confirms. A choice card answers and moves on in one click: api.answer(id, mutate).
+ *
  * State is saved to localStorage on every change and restored on load, so a
  * visitor who leaves to sign up for Zoho Projects finds their plan waiting.
  * ========================================================================== */
 (function (global) {
   'use strict';
 
-  var def, state, root, storeKey, dragId = null, toastTimer = null;
+  var def, state, root, storeKey, dragId = null, toastTimer = null, convoCfg = null;
 
   function esc(s) {
     return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
@@ -2718,7 +2975,86 @@ module.exports = {
     $('wz-hint').innerHTML = def.hint ? def.hint(state) : '';
   }
 
+  /* ---------- conversation: one question at a time ---------- */
+
+  function convoState(key) {
+    if (!state[key] || !state[key].answered) state[key] = { answered: {}, active: null };
+    return state[key];
+  }
+  function convoDone(c, ids) {
+    return !!c && !!c.answered && ids.every(function (id) { return c.answered[id]; });
+  }
+  function convoActive(cfg) {
+    var c = convoState(cfg.key), qs = cfg.questions, i;
+    for (i = 0; i < qs.length; i++) if (qs[i].id === c.active) return qs[i];
+    for (i = 0; i < qs.length; i++) if (!c.answered[qs[i].id]) return qs[i];
+    return null;
+  }
+
+  function convo(el, cfg) {
+    convoCfg = cfg;
+    var c = convoState(cfg.key), active = convoActive(cfg), qs = cfg.questions;
+    var answered = qs.filter(function (q) { return c.answered[q.id]; }).length;
+    var html = '<h2 class="step-title">' + esc(cfg.title) + '</h2>' +
+      (cfg.sub ? '<p class="step-sub">' + esc(cfg.sub) + '</p>' : '') +
+      '<div class="q-progress"><div class="q-progress-bar"><i style="width:' + (answered / qs.length * 100).toFixed(0) + '%"></i></div>' +
+      '<span>' + answered + ' of ' + qs.length + ' answered</span></div><div class="convo">';
+
+    qs.forEach(function (q, i) {
+      if (active && q.id === active.id) {
+        html += '<div class="q-card" id="wz-q"><div class="q-num">' + (i + 1) + '<span>→</span></div><div class="q-body">' +
+          '<h3 class="q-prompt">' + esc(q.prompt) + (q.optional ? ' <em>optional</em>' : '') + '</h3>' +
+          (q.hint ? '<p class="q-hint">' + esc(q.hint) + '</p>' : '') +
+          '<div class="q-control">' + q.body(state) + '</div>' +
+          '<div class="q-error" id="wz-q-err"></div>' +
+          '<div class="q-actions"><button class="btn primary" data-shell="q-ok">OK ✓</button>' +
+          '<span class="q-enter">or press Enter ↵</span>' +
+          (q.optional ? '<button class="btn ghost" data-shell="q-skip">Skip</button>' : '') + '</div></div></div>';
+      } else if (c.answered[q.id]) {
+        html += '<div class="q-row" data-shell="q-edit" data-q="' + esc(q.id) + '" title="Change this answer">' +
+          '<span class="q-tick">✓</span><span class="q-label">' + esc(q.label) + '</span>' +
+          '<span class="q-answer">' + q.answer(state) + '</span><span class="q-change">Change</span></div>';
+      }
+    });
+    if (!active) {
+      html += '<div class="q-done"><div>' + (cfg.done || 'That is everything for this step.') + '</div>' +
+        '<button class="btn primary" data-shell="next" data-autofocus>Continue →</button></div>';
+    }
+    el.innerHTML = html + '</div>';
+  }
+
+  function focusConvo() {
+    var card = $('wz-q'), scope = card || root.querySelector('.q-done');
+    if (!scope) return;
+    var f = scope.querySelector('[data-autofocus]') || scope.querySelector('[data-shell="q-ok"]');
+    if (f) { try { f.focus({ preventScroll: true }); } catch (e) { f.focus(); } }
+    if (scope.scrollIntoView) scope.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }
+
+  /** Close the open question: check it (unless skipping), collapse it, open the next one. */
+  function closeQuestion(skip, mutate) {
+    var cfg = convoCfg;
+    if (!cfg) return;
+    var q = convoActive(cfg);
+    if (!q) return;
+    if (mutate) mutate(state);
+    if (skip) { if (q.onSkip) q.onSkip(state); }
+    else {
+      var ok = q.valid ? q.valid(state) : true;
+      if (ok !== true) {
+        var err = $('wz-q-err');
+        if (err) err.textContent = ok || 'This one is needed to continue.';
+        save();
+        return;
+      }
+    }
+    var c = convoState(cfg.key);
+    c.answered[q.id] = true; c.active = null;
+    save(); render(); focusConvo();
+  }
+
   function render() {
+    convoCfg = null;
     $('wz-stepper').style.gridTemplateColumns = 'repeat(' + def.steps.length + ', 1fr)';
     $('wz-stepper').innerHTML = def.steps.map(function (s, i) {
       var cls = i < state.step ? 'done' : (i === state.step ? 'active' : '');
@@ -2736,6 +3072,7 @@ module.exports = {
     save();
     render();
     global.scrollTo(0, 0);
+    if (convoCfg) focusConvo();
   }
 
   var api = {
@@ -2746,6 +3083,13 @@ module.exports = {
     /** Mutate state and save WITHOUT re-rendering — for fields being typed in. */
     patch: function (fn) { fn(state); save(); refreshNav(); },
     go: go,
+    convo: convo,
+    /** Set a value and close the open question in one move — for choice cards. */
+    answer: function (id, mutate) {
+      var q = convoCfg && convoActive(convoCfg);
+      if (q && q.id === id) closeQuestion(false, mutate);
+      else if (mutate) api.set(mutate);
+    },
     next: function () {
       var step = def.steps[state.step];
       if (step.canAdvance && !step.canAdvance(state)) return;
@@ -2812,6 +3156,12 @@ module.exports = {
         else if (what === 'reset') api.reset();
         else if (what === 'close') api.closeModal();
         else if (what === 'go') go(Number(shell.getAttribute('data-i')));
+        else if (what === 'q-ok') closeQuestion(false);
+        else if (what === 'q-skip') closeQuestion(true);
+        else if (what === 'q-edit' && convoCfg) {
+          convoState(convoCfg.key).active = shell.getAttribute('data-q');
+          save(); render(); focusConvo();
+        }
         return;
       }
       if (ev.target.id === 'wz-mask') { api.closeModal(); return; }
@@ -2820,6 +3170,15 @@ module.exports = {
     root.addEventListener('change', function (ev) { act('data-change', ev); });
     root.addEventListener('input', function (ev) { act('data-input', ev); });
     root.addEventListener('keydown', function (ev) {
+      var t = ev.target;
+      if (ev.key === 'Enter' && t.tagName === 'INPUT' && t.type !== 'checkbox' && t.closest('.q-card')) {
+        ev.preventDefault(); closeQuestion(false); return;
+      }
+      // Lettered choice cards answer on their letter, as long as nobody is typing in a field.
+      if (/^[a-z0-9]$/i.test(ev.key) && !ev.metaKey && !ev.ctrlKey && !ev.altKey && !/^(INPUT|SELECT|TEXTAREA)$/.test(t.tagName)) {
+        var card = $('wz-q'), hit = card && card.querySelector('[data-key="' + ev.key.toUpperCase() + '"]');
+        if (hit) { ev.preventDefault(); hit.click(); return; }
+      }
       if (ev.key === 'Enter' && ev.target.closest('[data-enter]')) { ev.preventDefault(); act('data-enter', ev); }
       if (ev.key === 'Escape') api.closeModal();
     });
@@ -2887,10 +3246,18 @@ module.exports = {
     wire();
     enter();
     render();
+
+    // A second tab on the same tool would otherwise keep its own older copy of the
+    // session and show different answers (a different currency, say) from this one.
+    global.addEventListener('storage', function (ev) {
+      if (ev.key !== storeKey || !ev.newValue) return;
+      var fresh = load();
+      if (fresh) { state = fresh; render(); }
+    });
     return api;
   }
 
-  global.PMWizard = { mount: mount, esc: esc };
+  global.PMWizard = { mount: mount, esc: esc, convoDone: convoDone };
 })(window);
 
 </script>
@@ -2899,14 +3266,16 @@ module.exports = {
  * Capacity & Cost Planner — the cost-capacity-optimization skill's guided tool.
  *
  * This file is only the skill's STEPS. The chrome, navigation, saved session,
- * modal and drag-reorder come from ../wizard/wizard.js, and every number comes
- * from the tested engine in ../engine.bundle.js (PMEngine.planner). A new skill
- * writes a file like this one and reuses the other two unchanged.
+ * one-question-at-a-time flow, modal and drag-reorder come from
+ * ../wizard/wizard.js, and every number comes from the tested engine in
+ * ../engine.bundle.js (PMEngine.planner). A new skill writes a file like this
+ * one and reuses the other two unchanged.
  * ========================================================================== */
 (function () {
   'use strict';
 
   var P = window.PMEngine.planner;
+  var L = window.PMEngine.lead;
   var C = window.PMEngine.knowledge.catalog;
   var B = window.PMEngine.knowledge.benchmarks;
   var esc = window.PMWizard.esc;
@@ -2915,8 +3284,17 @@ module.exports = {
     eu: 'European Union', france: 'France', germany: 'Germany', uk: 'United Kingdom', india: 'India',
     uae: 'United Arab Emirates', saudi: 'Saudi Arabia', california: 'California (US)', japan: 'Japan', brazil: 'Brazil'
   };
-  var CURRENCIES = ['$', '€', '£', '₹', '¥', 'A$', 'C$', 'AED ', 'SAR ', 'SGD ', 'ZAR '];
-  var ZOHO_URL = 'https://www.zoho.com/projects/';
+  var INTERNAL = 'internal';
+  var PAY_GIST = {
+    time_and_materials: 'The client pays for the hours worked',
+    fixed_fee: 'One agreed price, whatever the hours',
+    retainer: 'A set number of hours each period',
+    milestone: 'Paid when a milestone is accepted',
+    outcome: 'Paid on results, not effort',
+    internal: 'Internal work — nobody is invoiced'
+  };
+  var HORIZONS = [4, 8, 12, 26];
+  var ZOHO_SIGNUP = 'https://www.zoho.com/projects/signup.html?servicename=ZohoProjects';
 
   /* ---------- state ---------- */
 
@@ -2924,19 +3302,30 @@ module.exports = {
     return {
       step: 0, scenario: null, touched: false, seq: 100,
       org: { name: '', industry: '', billingModel: '', weekPattern: 'mon_fri', workDays: [1, 2, 3, 4, 5],
-        hoursPerDay: 8, jurisdiction: '', currency: '$', horizonWeeks: 12 },
-      people: [], work: [], budget: { amount: 0, spent: 0 },
-      steps: [], planOpts: {}, planStale: true, refineLog: []
+        hoursPerDay: 8, jurisdiction: '', currency: 'USD', horizonWeeks: 12, genericLabels: false },
+      ctx: { answered: {}, active: null },
+      people: [], work: [], budget: { amount: 0, spent: 0 }, budgetHint: null,
+      steps: [], planOpts: {}, planStale: true, refineLog: [], lead: null
     };
   }
-  function inputOf(s) { return { org: s.org, people: s.people, work: s.work, budget: s.budget }; }
+  // Everything the engine sees goes through here, so a blank name is the same
+  // "Consultant #3" on every screen, in the report and in the payload.
+  function inputOf(s) { return P.withLabels({ org: s.org, people: s.people, work: s.work, budget: s.budget }); }
   function hrs(n) { return (Math.round(n * 10) / 10) + 'h'; }
-  function money(s, n) { return (s.org.currency || '') + Math.round(n).toLocaleString('en-US'); }
+  // The engine's formatter, not a second one: the currency cannot differ between screens.
+  function money(s, n) { return P.money({ org: s.org }, n); }
+  function sym(s) { return P.currencySymbol(s.org).trim(); }
+  function internal(s) { return s.org.billingModel === INTERNAL; }
   function dirty(s) { s.planStale = true; s.touched = true; }
+  function cap(t) { return t.charAt(0).toUpperCase() + t.slice(1); }
   function opt(v, label, cur) {
     return '<option value="' + esc(v) + '"' + (String(cur == null ? '' : cur) === String(v) ? ' selected' : '') + '>' + esc(label) + '</option>';
   }
   function numAttr(v) { return v === 0 || v ? esc(v) : ''; }
+  function focusOk() {
+    var ok = document.querySelector('#wz-q [data-shell="q-ok"]');
+    if (ok) ok.focus();
+  }
 
   /* ---------- 1. Problem ---------- */
 
@@ -2944,7 +3333,7 @@ module.exports = {
     var s = api.state;
     el.innerHTML =
       '<h2 class="step-title">What are you trying to fix?</h2>' +
-      '<p class="step-sub">Pick the problem closest to yours. Each one loads a realistic team so you can see a plan straight away — then overwrite it with your own people and numbers in the next steps.</p>' +
+      '<p class="step-sub">Pick the problem closest to yours. Each one loads a sample team so you can see a plan straight away — then overwrite it with your own people and numbers in the next steps.</p>' +
       '<div class="templates">' + C.SCENARIOS.map(function (sc) {
         return '<div class="tpl-card ' + (s.scenario === sc.key ? 'selected' : '') + '" data-act="scenario" data-k="' + sc.key + '">' +
           '<h3>' + esc(sc.title) + '</h3><p>' + esc(sc.tagline) + '</p><div class="tpl-meta">' +
@@ -2956,71 +3345,193 @@ module.exports = {
       '<a data-act="scenario" data-k="blank">Or start with an empty team and enter everything yourself →</a></p>';
   }
 
-  /* ---------- 2. Context ---------- */
+  /* ---------- 2. Context — asked one question at a time ---------- */
 
-  function renderContext(el, api) {
-    var s = api.state, o = s.org;
-    var groups = [];
-    C.INDUSTRIES.forEach(function (i) { if (groups.indexOf(i.group) === -1) groups.push(i.group); });
-    var ind = C.INDUSTRIES.filter(function (i) { return i.key === o.industry; })[0];
-    var band = ind && ind.band && B.UTILISATION[ind.band];
-    var indNote = !ind ? 'Decides whether a billable ratio means anything for you, and whether a published benchmark exists.'
-      : ind.billable === false ? 'No external billing here, so billable ratio is left out. Capacity and cost are what get measured.'
-      : band && band.provenance === 'sourced' ? 'A published benchmark exists for this sector: ' + band.source.name + '.'
-      : 'No published utilisation benchmark exists for this sector. You are compared with your own numbers, never a made-up target.';
-    var bm = B.BILLING_MODELS[o.billingModel];
-    var billNote = bm ? 'What matters under ' + bm.label + ': ' + bm.keyMetric + '. ' + bm.high
-      : 'Internal work: capacity and delivery are what count, not billable hours.';
-    var pattern = C.WEEK_PATTERNS.filter(function (p) { return p.key === o.weekPattern; })[0] || C.WEEK_PATTERNS[0];
-    var cal = P.weekHours(o);
+  function payOptions() {
+    return Object.keys(B.BILLING_MODELS).map(function (k) {
+      return { key: k, label: cap(B.BILLING_MODELS[k].label), gist: PAY_GIST[k] || '' };
+    }).concat([{ key: INTERNAL, label: 'Not client-billed', gist: PAY_GIST.internal }]);
+  }
+  function industryOf(s) { return C.INDUSTRIES.filter(function (i) { return i.key === s.org.industry; })[0]; }
+  function patternOf(s) {
+    return C.WEEK_PATTERNS.filter(function (p) { return p.key === s.org.weekPattern; })[0] || C.WEEK_PATTERNS[0];
+  }
+  function weekLine(s) {
+    var cal = P.weekHours(s.org);
+    return '<b>' + cal.days.map(function (d) { return C.DAY_NAMES[d].slice(0, 3); }).join(' · ') + '</b>, ' +
+      esc(s.org.hoursPerDay) + 'h a day — a <b>' + hrs(cal.hours) + '</b> week';
+  }
 
-    var days = '';
-    if (o.weekPattern === 'custom') {
-      days = '<div class="checkbox-grid">' + C.DAY_NAMES.map(function (d, i) {
-        var on = o.workDays.indexOf(i) !== -1;
-        return '<label class="cb ' + (on ? 'on' : '') + '"><input type="checkbox" data-change="org-day" data-d="' + i + '"' +
-          (on ? ' checked' : '') + '> ' + d.slice(0, 3) + '</label>';
-      }).join('') + '</div>';
-    }
+  function contextQuestions(s) {
+    var o = s.org;
+    var qs = [];
 
-    el.innerHTML =
-      '<h2 class="step-title">Your context</h2>' +
-      '<p class="step-sub">These decide how the numbers are read. The same hours mean something different under a fixed fee than on time &amp; materials, and a "weekend" is not Saturday–Sunday everywhere.</p>' +
-      '<div class="form-grid">' +
-        '<div class="field"><label>Team or organisation</label><input type="text" value="' + esc(o.name) + '" placeholder="e.g. Delivery team, Apex Studio" data-input="org-text" data-k="name"></div>' +
-        '<div class="field"><label>Industry</label><select data-change="org" data-k="industry">' + opt('', 'Choose…', o.industry) +
+    qs.push({
+      id: 'industry', label: 'Kind of work',
+      prompt: 'First — what kind of work does your team do?',
+      hint: 'This decides whether a published benchmark exists for you, and whether a billable ratio means anything at all.',
+      body: function () {
+        var groups = [];
+        C.INDUSTRIES.forEach(function (i) { if (groups.indexOf(i.group) === -1) groups.push(i.group); });
+        var ind = industryOf(s), band = ind && ind.band && B.UTILISATION[ind.band];
+        var note = !ind ? ''
+          : ind.billable === false ? 'Teams like this rarely bill by the hour, so capacity and cost are what get measured.'
+          : band && band.provenance === 'sourced' ? 'A published benchmark exists for this sector: <b>' + esc(band.source.name) + '</b>.'
+          : 'No published utilisation benchmark exists for this sector. You are compared with your own numbers, never a made-up target.';
+        return '<select data-change="org" data-k="industry" data-autofocus>' + opt('', 'Choose the closest match…', o.industry) +
           groups.map(function (g) {
             return '<optgroup label="' + esc(g) + '">' + C.INDUSTRIES.filter(function (i) { return i.group === g; })
               .map(function (i) { return opt(i.key, i.label, o.industry); }).join('') + '</optgroup>';
-          }).join('') + '</select><div class="note">' + esc(indNote) + '</div></div>' +
-        '<div class="field"><label>How the work is paid for</label><select data-change="org" data-k="billingModel">' +
-          opt('', 'Not client-billed (internal work)', o.billingModel) +
-          Object.keys(B.BILLING_MODELS).map(function (k) {
-            var l = B.BILLING_MODELS[k].label; return opt(k, l.charAt(0).toUpperCase() + l.slice(1), o.billingModel);
-          }).join('') + '</select><div class="note">' + esc(billNote) + '</div></div>' +
-        '<div class="field"><label>Working week</label><select data-change="org" data-k="weekPattern">' +
-          C.WEEK_PATTERNS.map(function (p) { return opt(p.key, p.label, o.weekPattern); }).join('') + '</select>' +
-          '<div class="note">' + esc(pattern.where) + '</div>' + days + '</div>' +
-        '<div class="field"><label>Hours per working day</label><input type="number" min="1" max="24" step="0.5" value="' + numAttr(o.hoursPerDay) + '" data-change="org" data-k="hoursPerDay"></div>' +
-        '<div class="field"><label>Planning horizon (weeks)</label><input type="number" min="1" max="104" value="' + numAttr(o.horizonWeeks) + '" data-change="org" data-k="horizonWeeks">' +
-          '<div class="note">How long this allocation is expected to hold. Sustained overload only counts as a finding over three weeks or more.</div></div>' +
-        '<div class="field"><label>Currency</label><select data-change="org" data-k="currency">' +
-          CURRENCIES.map(function (c) { return opt(c, c.trim(), o.currency); }).join('') + '</select></div>' +
-        '<div class="field"><label>Jurisdiction (optional)</label><select data-change="org" data-k="jurisdiction">' + opt('', 'Not specified', o.jurisdiction) +
-          Object.keys(JURISDICTIONS).map(function (k) { return opt(k, JURISDICTIONS[k], o.jurisdiction); }).join('') +
-          '</select><div class="note">Only used to name the working-time rules worth checking. This tool does not assess compliance.</div></div>' +
-        '<div class="field"><label>Budget for this work (optional)</label><input type="number" min="0" step="1000" value="' + (s.budget.amount ? esc(s.budget.amount) : '') + '" placeholder="Leave empty to skip the forecast" data-change="budget" data-k="amount"></div>' +
-        '<div class="field"><label>Spent so far</label><input type="number" min="0" step="1000" value="' + (s.budget.spent ? esc(s.budget.spent) : '') + '" placeholder="0" data-change="budget" data-k="spent"></div>' +
-      '</div>' +
-      '<div class="summary-line">Working week: <b>' + cal.days.map(function (d) { return C.DAY_NAMES[d].slice(0, 3); }).join(' · ') +
-        '</b> = <b>' + hrs(cal.hours) + '</b> &nbsp;·&nbsp; Planning <b>' + esc(o.horizonWeeks) + ' weeks</b> ahead' +
-        (s.budget.amount > 0 ? ' &nbsp;·&nbsp; Budget <b>' + money(s, s.budget.amount) + '</b>' : '') + '</div>';
+          }).join('') + '</select>' + (note ? '<div class="q-note">' + note + '</div>' : '');
+      },
+      answer: function () { var ind = industryOf(s); return '<b>' + esc(ind ? ind.label : '—') + '</b>'; },
+      valid: function () { return o.industry ? true : 'Pick the closest match — “Something else” is fine.'; }
+    });
+
+    qs.push({
+      id: 'pay', label: 'How it is paid for',
+      prompt: 'And how is that work paid for?',
+      hint: 'The same hours mean something different under each of these, so nothing is assumed for you.',
+      body: function () {
+        return '<div class="choices">' + payOptions().map(function (p, i) {
+          var key = String.fromCharCode(65 + i);
+          return '<button type="button" class="choice' + (o.billingModel === p.key ? ' on' : '') + '" data-act="pay" data-k="' + p.key +
+            '" data-key="' + key + '"><kbd>' + key + '</kbd><div><b>' + esc(p.label) + '</b><span>' + esc(p.gist) + '</span></div></button>';
+        }).join('') + '</div>';
+      },
+      answer: function () {
+        if (internal(s)) return '<b>Not client-billed</b> — capacity and delivery are what count, so budget and billing questions are skipped';
+        var bm = B.BILLING_MODELS[o.billingModel];
+        return bm ? '<b>' + esc(cap(bm.label)) + '</b> — what to watch: ' + esc(bm.keyMetric) : '—';
+      },
+      valid: function () { return o.billingModel ? true : 'Pick one — the plan reads your hours differently for each.'; }
+    });
+
+    qs.push({
+      id: 'week', label: 'Working week',
+      prompt: 'Which days does the team work?',
+      hint: 'A “weekend” is not Saturday–Sunday everywhere, and every capacity figure is measured against this.',
+      body: function () {
+        var days = '';
+        if (o.weekPattern === 'custom') {
+          days = '<div class="checkbox-grid">' + C.DAY_NAMES.map(function (d, i) {
+            var on = o.workDays.indexOf(i) !== -1;
+            return '<label class="cb ' + (on ? 'on' : '') + '"><input type="checkbox" data-change="org-day" data-d="' + i + '"' +
+              (on ? ' checked' : '') + '> ' + d.slice(0, 3) + '</label>';
+          }).join('') + '</div>';
+        }
+        return '<div class="pills">' + C.WEEK_PATTERNS.map(function (p) {
+          return '<button type="button" class="pill-btn' + (o.weekPattern === p.key ? ' on' : '') + '" data-act="week" data-k="' + p.key + '">' +
+            esc(p.label.replace(' — pick the days', '')) + '</button>';
+        }).join('') + '</div>' + days +
+          '<div class="q-inline">about <input type="number" min="1" max="24" step="0.5" value="' + numAttr(o.hoursPerDay) +
+            '" data-input="org-num" data-k="hoursPerDay" data-autofocus> hours a day &nbsp;=&nbsp; <b id="week-total">' + hrs(P.weekHours(o).hours) + '</b> a week</div>' +
+          '<div class="q-note">' + esc(patternOf(s).where) + '</div>';
+      },
+      answer: function () { return weekLine(s); },
+      valid: function () { return o.hoursPerDay >= 1 && o.hoursPerDay <= 24 ? true : 'Hours a day should be between 1 and 24.'; }
+    });
+
+    qs.push({
+      id: 'horizon', label: 'Planning ahead',
+      prompt: 'How many weeks ahead are you planning?',
+      hint: 'How long this allocation is expected to hold. Overload only counts as “sustained” from three weeks.',
+      body: function () {
+        return '<div class="pills">' + HORIZONS.map(function (n) {
+          return '<button type="button" class="pill-btn' + (Number(o.horizonWeeks) === n ? ' on' : '') + '" data-act="horizon" data-n="' + n + '">' + n + ' weeks</button>';
+        }).join('') + '</div><div class="q-inline">or <input type="number" min="1" max="104" value="' + numAttr(o.horizonWeeks) +
+          '" data-input="org-num" data-k="horizonWeeks" data-autofocus> weeks</div>';
+      },
+      answer: function () { return '<b>' + esc(o.horizonWeeks) + ' weeks</b> ahead'; },
+      valid: function () { return o.horizonWeeks >= 1 && o.horizonWeeks <= 104 ? true : 'Between 1 and 104 weeks.'; }
+    });
+
+    qs.push({
+      id: 'currency', label: 'Currency',
+      prompt: 'Which currency are your rates in?',
+      hint: 'Every figure from here on — rates, weekly cost, budget, the report — is shown in it.',
+      body: function () {
+        return '<div class="pills">' + C.CURRENCIES.map(function (c) {
+          return '<button type="button" class="pill-btn' + (o.currency === c.code ? ' on' : '') + '" data-act="currency" data-k="' + c.code + '">' +
+            esc(c.symbol.trim()) + (c.symbol.trim() === c.code ? '' : ' <small>' + c.code + '</small>') + '</button>';
+        }).join('') + '</div>';
+      },
+      answer: function () {
+        var c = C.CURRENCIES.filter(function (x) { return x.code === o.currency; })[0];
+        return '<b>' + esc(sym(s)) + '</b>' + (c ? ' — ' + esc(c.name) : '');
+      }
+    });
+
+    // Internal work is planned on capacity, so there is no budget to ask about.
+    if (!internal(s)) {
+      qs.push({
+        id: 'budget', label: 'Budget', optional: true,
+        prompt: 'Is there a budget for this work?',
+        hint: 'Add it and you get a forecast against it. Skip it and the plan covers capacity only.',
+        body: function () {
+          var h = s.budgetHint, cur = esc(sym(s));
+          var eg = function (n) { return 'e.g. ' + Math.round(n).toLocaleString('en-US'); };
+          return '<div class="q-pair">' +
+            '<div><label for="q-budget">Budget for this work</label><span class="money-in"><span>' + cur + '</span><input id="q-budget" type="number" min="0" step="1000" value="' +
+              (s.budget.amount ? esc(s.budget.amount) : '') + '" placeholder="' + eg(h ? h.amount : 120000) + '" data-input="budget" data-k="amount" data-autofocus></span></div>' +
+            '<div><label for="q-spent">Spent so far</label><span class="money-in"><span>' + cur + '</span><input id="q-spent" type="number" min="0" step="1000" value="' +
+              (s.budget.spent ? esc(s.budget.spent) : '') + '" placeholder="' + eg(h ? h.spent : 78000) + '" data-input="budget" data-k="spent"></span></div></div>' +
+            (h ? '<div class="q-note">Just exploring? <a data-act="budget-sample" style="cursor:pointer">Use the sample figures</a> — ' +
+              money(s, h.amount) + ' budget, ' + money(s, h.spent) + ' spent.</div>' : '');
+        },
+        answer: function () {
+          return s.budget.amount > 0
+            ? '<b>' + money(s, s.budget.amount) + '</b> budget, <b>' + money(s, s.budget.spent) + '</b> spent so far'
+            : 'No budget — the plan covers capacity only';
+        },
+        valid: function () { return s.budget.spent > 0 && !(s.budget.amount > 0) ? 'Add the budget too, or clear “spent so far”.' : true; },
+        onSkip: function (st) { st.budget = { amount: 0, spent: 0 }; }
+      });
+    }
+
+    qs.push({
+      id: 'where', label: 'Based in', optional: true,
+      prompt: 'Where is the team based?',
+      hint: 'Only used to name the working-time rules worth checking. This tool does not assess compliance.',
+      body: function () {
+        return '<select data-change="org" data-k="jurisdiction" data-autofocus>' + opt('', 'Prefer not to say', o.jurisdiction) +
+          Object.keys(JURISDICTIONS).map(function (k) { return opt(k, JURISDICTIONS[k], o.jurisdiction); }).join('') + '</select>';
+      },
+      answer: function () { return o.jurisdiction ? '<b>' + esc(JURISDICTIONS[o.jurisdiction]) + '</b>' : 'Not given'; },
+      onSkip: function (st) { st.org.jurisdiction = ''; }
+    });
+
+    qs.push({
+      id: 'name', label: 'Team name', optional: true,
+      prompt: 'Last one — what should we call this team?',
+      hint: 'It only titles your report. A nickname is fine, and so is nothing at all.',
+      body: function () {
+        return '<input type="text" value="' + esc(o.name) + '" placeholder="e.g. Delivery team" data-input="org-text" data-k="name" data-autofocus>';
+      },
+      answer: function () { return o.name ? '<b>' + esc(o.name) + '</b>' : 'No name — the report is simply untitled'; },
+      onSkip: function (st) { st.org.name = ''; }
+    });
+
+    return qs;
+  }
+
+  function renderContext(el, api) {
+    api.convo(el, {
+      key: 'ctx',
+      title: 'A few quick questions',
+      sub: 'One at a time. They decide how your numbers get read — you can change any answer by clicking it.',
+      questions: contextQuestions(api.state),
+      done: '<b>That is the setting.</b> Next: who is on the team, and what each person is carrying.'
+    });
+  }
+  function contextDone(s) {
+    return window.PMWizard.convoDone(s.ctx, contextQuestions(s).map(function (q) { return q.id; }));
   }
 
   /* ---------- 3. Team & work ---------- */
 
   function teamTotals(s) {
-    var load = P.computeLoad(s.people, s.work), t = load.totals, cal = P.weekHours(s.org);
+    var inp = inputOf(s), load = P.computeLoad(inp.people, inp.work), t = load.totals, cal = P.weekHours(s.org);
     var over = load.rows.filter(function (r) { return r.over > 0; });
     var pe = document.getElementById('tw-people'), we = document.getElementById('tw-work');
     if (pe) pe.innerHTML = '<b>' + t.people + '</b> people · <b>' + hrs(t.capacity) + '</b> weekly capacity · working week is ' + hrs(cal.hours);
@@ -3029,43 +3540,72 @@ module.exports = {
       (t.unassignedHours > 0 ? ' · <span class="bad">' + hrs(t.unassignedHours) + ' unowned</span>' : '');
   }
 
+  // Generic references depend on every row (the third consultant is "#3"), so they are
+  // refreshed in place as rows are edited — without re-rendering what is being typed in.
+  function relabel(s) {
+    var inp = inputOf(s), gen = s.org.genericLabels;
+    var by = function (list) { var m = {}; list.forEach(function (x) { m[x.id] = x; }); return m; };
+    var people = by(inp.people), work = by(inp.work);
+    [].forEach.call(document.querySelectorAll('[data-label]'), function (el) {
+      var kind = el.getAttribute('data-label'), id = el.getAttribute('data-id');
+      var text = kind === 'person' ? (people[id] || {}).name : kind === 'project' ? (work[id] || {}).project : (work[id] || {}).title;
+      if (text == null) return;
+      if (el.tagName === 'OPTION') el.textContent = text;
+      else if (gen && kind !== 'title') el.value = text;
+      else el.placeholder = text;
+    });
+  }
+
   function renderTeam(el, api) {
-    var s = api.state;
+    var s = api.state, inp = inputOf(s), int = internal(s), gen = s.org.genericLabels, cur = esc(sym(s));
     var roles = [];
     s.people.forEach(function (p) { if (p.role && roles.indexOf(p.role) === -1) roles.push(p.role); });
+    var label = {};
+    inp.people.forEach(function (p) { label[p.id] = p.name; });
 
     var people = s.people.map(function (p) {
-      var c = function (k, type, cls) {
-        return '<td class="cell ' + (cls || '') + '"><input type="' + type + '"' + (type === 'number' ? ' min="0" step="any"' : '') +
-          (k === 'role' ? ' list="roles"' : '') + ' value="' + numAttr(p[k]) + '" data-change="person" data-id="' + p.id + '" data-k="' + k + '"' +
-          (k === 'name' ? ' placeholder="Name"' : k === 'role' ? ' placeholder="Role"' : '') + '></td>';
+      var c = function (k, cls) {
+        return '<td class="cell ' + (cls || '') + '"><input type="' + (k === 'role' ? 'text' : 'number" min="0" step="any') + '"' +
+          (k === 'role' ? ' list="roles" placeholder="Role"' : '') + ' value="' + numAttr(p[k]) + '" data-change="person" data-id="' + p.id + '" data-k="' + k + '"></td>';
       };
-      return '<tr>' + c('name', 'text') + c('role', 'text') + c('capacity', 'number', 'num') + c('costRate', 'number', 'num') +
-        c('billRate', 'number', 'num') + '<td class="ops"><button class="x-btn" title="Remove" data-act="del-person" data-id="' + p.id + '">×</button></td></tr>';
+      return '<tr><td class="cell"><input type="text" data-label="person" data-change="person" data-id="' + p.id + '" data-k="name"' +
+        (gen ? ' disabled value="' + esc(label[p.id]) + '"' : ' value="' + esc(p.name) + '" placeholder="' + esc(label[p.id]) + '"') + '></td>' +
+        c('role') + c('capacity', 'num') + c('costRate', 'num') + (int ? '' : c('billRate', 'num')) +
+        '<td class="ops"><button class="x-btn" title="Remove" data-act="del-person" data-id="' + p.id + '">×</button></td></tr>';
     }).join('');
 
-    var work = s.work.map(function (w) {
+    var work = s.work.map(function (w, i) {
       var owner = s.people.filter(function (p) { return p.id === w.owner; })[0];
+      var lw = inp.work[i];
       return '<tr>' +
-        '<td class="cell"><input type="text" value="' + esc(w.title) + '" placeholder="Work item" data-change="work" data-id="' + w.id + '" data-k="title"></td>' +
-        '<td class="cell"><input type="text" value="' + esc(w.project || '') + '" placeholder="Project / client" data-change="work" data-id="' + w.id + '" data-k="project"></td>' +
+        '<td class="cell"><input type="text" data-label="title" value="' + esc(w.title) + '" placeholder="' + esc(lw.title) + '" data-change="work" data-id="' + w.id + '" data-k="title"></td>' +
+        '<td class="cell"><input type="text" data-label="project" data-change="work" data-id="' + w.id + '" data-k="project"' +
+          (gen ? ' disabled value="' + esc(lw.project) + '"' : ' value="' + esc(w.project || '') + '" placeholder="' + esc(lw.project) + '"') + '></td>' +
         '<td class="cell"><select data-change="work" data-id="' + w.id + '" data-k="owner">' + opt('', 'Unowned', w.owner || '') +
-          s.people.map(function (p) { return opt(p.id, p.name || 'Unnamed', w.owner); }).join('') + '</select></td>' +
+          s.people.map(function (p) {
+            return '<option data-label="person" data-id="' + p.id + '" value="' + esc(p.id) + '"' + (w.owner === p.id ? ' selected' : '') + '>' + esc(label[p.id]) + '</option>';
+          }).join('') + '</select></td>' +
         '<td class="cell"><input type="text" list="roles" value="' + esc(w.role || '') + '" placeholder="' + esc(owner ? owner.role || 'Any' : 'Role needed') + '" data-change="work" data-id="' + w.id + '" data-k="role"></td>' +
         '<td class="cell num"><input type="number" min="0" step="any" value="' + numAttr(w.hours) + '" data-change="work" data-id="' + w.id + '" data-k="hours"></td>' +
-        '<td class="chk"><input type="checkbox"' + (w.billable ? ' checked' : '') + ' data-change="work" data-id="' + w.id + '" data-k="billable"></td>' +
+        (int ? '' : '<td class="chk"><input type="checkbox"' + (w.billable ? ' checked' : '') + ' data-change="work" data-id="' + w.id + '" data-k="billable"></td>') +
         '<td class="ops"><button class="x-btn" title="Remove" data-act="del-work" data-id="' + w.id + '">×</button></td></tr>';
     }).join('');
 
     el.innerHTML =
-      '<h2 class="step-title">Team &amp; work</h2>' +
-      '<p class="step-sub">Who is on the team, and what each person is carrying in a typical week. Rough numbers are fine — the plan is only as exact as these are, and it says so.</p>' +
+      '<h2 class="step-title">Who is on the team, and what are they carrying?</h2>' +
+      '<p class="step-sub">A typical week is enough, and rough numbers are fine — the plan is only as exact as these are, and it says so. ' +
+        '<b>Names and project names are optional:</b> leave one blank and it is referred to by role and number.</p>' +
+      '<label class="privacy"><input type="checkbox" data-change="generic"' + (gen ? ' checked' : '') + '>' +
+        '<div><b>Keep real names out of it</b><span>People become “' + esc(inp.people[0] && gen ? inp.people[0].name : 'Consultant #1') +
+        '”, projects become “Project #1” — on every screen, in the report and in the Zoho Projects setup. What you typed is kept, and comes back if you untick this.</span></div></label>' +
       '<h3 class="sec" style="margin-top:0">People</h3>' +
-      '<div class="table-wrap"><table class="grid"><thead><tr><th>Name</th><th>Role</th><th>Capacity h/week</th><th>Cost / hour</th><th>Bill / hour</th><th></th></tr></thead>' +
-        '<tbody id="tb-people">' + (people || '<tr><td colspan="6" class="plan-empty">No people yet.</td></tr>') + '</tbody></table></div>' +
+      '<div class="table-wrap"><table class="grid"><thead><tr><th>Name <i>optional</i></th><th>Role</th><th>Capacity <i>h/week</i></th><th>Cost / hour <i>' + cur + '</i></th>' +
+        (int ? '' : '<th>Bill / hour <i>' + cur + '</i></th>') + '<th></th></tr></thead>' +
+        '<tbody id="tb-people">' + (people || '<tr><td colspan="6" class="plan-empty">No people yet. Add the first one — a role is enough.</td></tr>') + '</tbody></table></div>' +
       '<div class="table-foot"><button class="btn small" data-act="add-person">+ Add person</button><div class="totals" id="tw-people"></div></div>' +
       '<h3 class="sec">Work — hours per week</h3>' +
-      '<div class="table-wrap"><table class="grid"><thead><tr><th>Work item</th><th>Project / client</th><th>Owner</th><th>Role needed</th><th>Hours/week</th><th>Billable</th><th></th></tr></thead>' +
+      '<div class="table-wrap"><table class="grid"><thead><tr><th>Work item</th><th>Project / client <i>optional</i></th><th>Owner</th><th>Role needed</th><th>Hours/week</th>' +
+        (int ? '' : '<th>Billable</th>') + '<th></th></tr></thead>' +
         '<tbody id="tb-work">' + (work || '<tr><td colspan="7" class="plan-empty">No work yet.</td></tr>') + '</tbody></table></div>' +
       '<div class="table-foot"><button class="btn small" data-act="add-work">+ Add work item</button><div class="totals" id="tw-work"></div></div>' +
       '<datalist id="roles">' + roles.map(function (r) { return '<option value="' + esc(r) + '">'; }).join('') + '</datalist>';
@@ -3082,14 +3622,14 @@ module.exports = {
       '<span class="val' + (over ? ' over' : '') + '">' + hrs(row.allocated) + ' / ' + hrs(row.capacity) + '</span></div>';
   }
 
-  function stepEditor(st, s, people) {
+  function stepEditor(st, inp, people) {
     var f = function (k) { return ' data-change="step-field" data-id="' + esc(st.id) + '" data-k="' + k + '"'; };
-    var items = '<select' + f('workId') + '>' + s.work.map(function (w) {
+    var items = '<select' + f('workId') + '>' + inp.work.map(function (w) {
       return opt(w.id, w.title + (w.project ? ' — ' + w.project : ''), st.workId);
     }).join('') + '</select>';
     if (st.kind === 'hire') {
       return '<input type="text" value="' + esc(st.role || '') + '" placeholder="Role"' + f('role') + '>' +
-        '<input type="number" min="1" step="any" value="' + numAttr(st.capacity) + '" title="Hours per week"' + f('capacity') + '><span class="arrow">h/week at</span>' +
+        '<input type="number" min="1" step="any" value="' + numAttr(st.capacity) + '" title="Hours per week"' + f('capacity') + '><span class="arrow">h/week at ' + esc(P.currencySymbol(inp.org).trim()) + '</span>' +
         '<input type="number" min="0" step="any" value="' + numAttr(st.costRate) + '" title="Cost per hour"' + f('costRate') + '><span class="arrow">/hour</span>';
     }
     var hours = '<input type="number" min="0" step="any" value="' + numAttr(st.hours) + '" title="Hours per week"' + f('hours') + '><span class="arrow">h/week</span>';
@@ -3112,9 +3652,7 @@ module.exports = {
     }).join('');
 
     var findings = a.findings.map(function (f) {
-      var z = C.ZOHO_FEATURES[f.feature];
-      return '<div class="find"><span class="pill g-' + f.grade + '">' + f.grade + '</span><b>' + esc(f.headline) + '</b><p>' + esc(f.detail) + '</p>' +
-        (z ? '<div class="zbind"><em>In Zoho Projects — ' + esc(z.name) + '.</em> ' + esc(z.does) + ' <span>(' + esc(z.tier) + ')</span></div>' : '') + '</div>';
+      return '<div class="find"><span class="pill g-' + f.grade + '">' + f.grade + '</span><b>' + esc(f.headline) + '</b><p>' + esc(f.detail) + '</p></div>';
     }).join('');
 
     var issues = {};
@@ -3123,7 +3661,7 @@ module.exports = {
       return '<div class="plan-row' + (issues[st.id] ? ' skipped' : '') + '" draggable="true" data-drag-id="' + esc(st.id) + '">' +
         '<span class="grip" title="Drag to reorder">⋮⋮</span><span class="n">' + (i + 1) + '</span>' +
         '<div><div class="plan-text">' + esc(P.describeStep(st, inp)) + '</div>' +
-        '<div class="plan-edit">' + stepEditor(st, s, a.applied.people) + '</div>' +
+        '<div class="plan-edit">' + stepEditor(st, inp, a.applied.people) + '</div>' +
         (issues[st.id] ? '<div class="plan-issue">Skipped: ' + esc(issues[st.id]) + '.</div>' : '') + '</div>' +
         '<div class="plan-ops">' +
           '<button class="x-btn" title="Move up" data-act="step-up" data-id="' + esc(st.id) + '"' + (i === 0 ? ' disabled' : '') + '>↑</button>' +
@@ -3144,6 +3682,7 @@ module.exports = {
       residual = '<div class="residual closed">' + (problem > 0 ? 'Every hour of overload and unowned work has a home in this plan.' : 'The load already fits capacity. Nothing needs to move.') + '</div>';
     }
 
+    var eg = inp.people[1] ? inp.people[1].name : 'Consultant #2';
     var log = s.refineLog.length
       ? s.refineLog.map(function (r) { return '<div class="entry' + (r.ok ? '' : ' miss') + '"><b>' + esc(r.text) + '</b> — ' + esc(r.summary) + '</div>'; }).join('')
       : 'This box takes fixed commands — it is a parser, not a chatbot. Try: ' + P.REFINE_EXAMPLES.map(function (e) { return '“' + esc(e) + '”'; }).join(', ') + '.';
@@ -3171,11 +3710,13 @@ module.exports = {
         '<button class="btn small" data-act="add-descope">+ Descope work</button>' +
         '<button class="btn small" data-act="add-hire">+ Add a hire</button></div>' +
       residual +
-      '<div class="refine-box"><input type="text" id="refine-input" data-enter="refine" placeholder="e.g. move API integration to Arjun · don\'t touch Tara · same role only · hire a Developer">' +
+      '<div class="refine-box"><input type="text" id="refine-input" data-enter="refine" placeholder="e.g. move ' + esc(inp.work[0] ? inp.work[0].title : 'Work item #1') + ' to ' + esc(eg) + ' · same role only · hire a Developer">' +
         '<button class="btn primary" data-act="refine">Refine</button></div>' +
       '<div class="refine-log">' + log + '</div>' +
 
-      '<h3 class="sec">Where things stand today</h3>' + (findings || '<div class="plan-empty">Nothing to report.</div>');
+      '<h3 class="sec">Where things stand today</h3>' + (findings || '<div class="plan-empty">Nothing to report.</div>') +
+      '<div class="legend"><b>Reported</b> is a number you typed. <b>Derived</b> is arithmetic on what you typed. Nothing here is measured yet — ' +
+        'the last step shows where each of these becomes a real figure.</div>';
   }
 
   /* ---------- 5. Validate ---------- */
@@ -3198,10 +3739,33 @@ module.exports = {
   /* ---------- 6. Land ---------- */
 
   function renderLand(el, api) {
-    var s = api.state, setup = P.buildSetupSteps(inputOf(s), s.steps);
+    var s = api.state, inp = inputOf(s);
+    var setup = P.buildSetupSteps(inp, s.steps), features = P.buildFeatureMap(inp, s.steps);
+
+    var report = s.lead
+      ? '<div class="land-card"><h3>Download the report</h3><p>The plan, the checks and the Zoho Projects setup — yours to keep and share.</p>' +
+          '<div class="btn-row"><button class="btn primary" data-act="export-md">Report (Markdown)</button>' +
+          '<button class="btn" data-act="export-csv">Plan (CSV)</button></div>' +
+          '<div class="gate-ok">Unlocked for <b>' + esc(s.lead.email) + '</b> · <a data-act="lead-change">use a different email</a></div></div>'
+      : '<div class="land-card gate"><h3>Download the report</h3>' +
+          '<p>The plan, the checks and the Zoho Projects setup as a report, plus the plan as a spreadsheet. Enter your work email to unlock them.</p>' +
+          '<div class="locked"><span>Locked · Report (Markdown)</span><span>Locked · Plan (CSV)</span></div>' +
+          '<input type="email" id="lead-email" placeholder="you@yourcompany.com" autocomplete="email" data-enter="unlock">' +
+          '<div class="gate-error" id="lead-err"></div>' +
+          '<div class="btn-row"><button class="btn primary" data-act="unlock">Unlock the report</button></div>' +
+          '<div class="gate-ok">Company email only — personal addresses such as Gmail or Outlook are not accepted.</div></div>';
+
     el.innerHTML =
       '<h2 class="step-title">Take it into Zoho Projects</h2>' +
       '<p class="step-sub">Everything so far is an estimate from numbers you typed. Zoho Projects is where it becomes measured. Your plan is saved in this browser, so it will still be here when you come back.</p>' +
+
+      '<h3 class="sec" style="margin-top:0">What you found — and where it lives in Zoho Projects</h3>' +
+      '<div class="feature-grid">' + features.map(function (f) {
+        return '<div class="feature"><h4>' + esc(f.name) + '</h4><span class="tier">' + esc(f.tier) + '</span><p>' + esc(f.does) + '</p>' +
+          '<div class="for">What it would show you, measured</div><ul>' +
+          f.covers.map(function (c) { return '<li>' + esc(c) + '</li>'; }).join('') + '</ul></div>';
+      }).join('') + '</div>' +
+
       '<div class="land-grid">' +
         '<div class="land-card"><h3>Set it up in Zoho Projects</h3>' +
           '<p>This is your plan translated into the configuration that makes it real — the rebalanced owners are already applied.</p>' +
@@ -3210,14 +3774,11 @@ module.exports = {
           }).join('') + '</ol>' +
           '<div class="btn-row"><button class="btn primary" data-act="try-zoho">Try on Zoho Projects</button>' +
           '<button class="btn" data-act="show-payload">See the API payload</button></div></div>' +
-        '<div class="land-col">' +
+        '<div class="land-col">' + report +
           '<div class="land-card"><h3>Or hand it to your AI agent</h3>' +
             '<p>If you use Claude, ChatGPT or Gemini, the PM Skills plugin can carry this plan out through your own Zoho connection. It reads the real numbers first, tells you where they differ from what you entered, and asks before every change.</p>' +
             '<div class="btn-row"><button class="btn" data-act="copy-prompt">Copy the hand-off prompt</button>' +
             '<a class="btn" href="https://github.com/Prakash2587/pmskills#install">Install the skill</a></div></div>' +
-          '<div class="land-card"><h3>Export</h3><p>Take the plan with you.</p>' +
-            '<div class="btn-row"><button class="btn" data-act="export-md">Report (Markdown)</button>' +
-            '<button class="btn" data-act="export-csv">Plan (CSV)</button></div></div>' +
         '</div></div>';
   }
 
@@ -3236,31 +3797,47 @@ module.exports = {
       var key = el.getAttribute('data-k'), cur = api.state;
       if (cur.touched && cur.scenario && !window.confirm('This replaces the team and work you have entered. Continue?')) return;
       api.set(function (s) {
-        if (key === 'blank') { s.people = []; s.work = []; s.budget = { amount: 0, spent: 0 }; }
-        else {
-          var sc = JSON.parse(JSON.stringify(C.SCENARIOS.filter(function (x) { return x.key === key; })[0]));
-          s.people = sc.people; s.work = sc.work; s.budget = sc.budget;
-          s.org.industry = sc.org.industry; s.org.billingModel = sc.org.billingModel;
-        }
+        var sc = key === 'blank' ? null : JSON.parse(JSON.stringify(C.SCENARIOS.filter(function (x) { return x.key === key; })[0]));
+        s.people = sc ? sc.people : [];
+        s.work = sc ? sc.work : [];
+        // A sample budget is only ever a hint on the budget question, never a value:
+        // the forecast must come from a figure the user gave.
+        s.budget = { amount: 0, spent: 0 };
+        s.budgetHint = sc && sc.budget && sc.budget.amount ? sc.budget : null;
+        if (sc) s.org.industry = sc.org.industry;
+        // The sample changes these two answers, so they are asked again. How the work
+        // is paid for is never pre-filled — that one is always the user's own answer.
+        delete s.ctx.answered.industry; delete s.ctx.answered.budget; s.ctx.active = null;
         // Always reset: a horizon left over from the previous scenario would silently
         // change the forecast and the sustained-overload check.
-        s.org.horizonWeeks = (key !== 'blank' && sc.horizonWeeks) || 12;
+        s.org.horizonWeeks = (sc && sc.horizonWeeks) || 12;
         s.scenario = key; s.steps = []; s.planOpts = {}; s.refineLog = []; s.planStale = true; s.touched = false;
       });
     },
 
-    'org-text': function (el, api) { api.patch(function (s) { s.org[el.getAttribute('data-k')] = el.value; }); },
-    org: function (el, api) {
+    /* context */
+    'org-text': function (el, api) { api.patch(function (s) { s.org[el.getAttribute('data-k')] = el.value.trim(); }); },
+    'org-num': function (el, api) {
       var k = el.getAttribute('data-k');
+      api.patch(function (s) { s.org[k] = Number(el.value) || 0; s.planStale = true; });
+      var total = document.getElementById('week-total');
+      if (total) total.textContent = hrs(P.weekHours(api.state.org).hours);
+    },
+    org: function (el, api) {
+      api.set(function (s) { s.org[el.getAttribute('data-k')] = el.value; s.planStale = true; });
+      focusOk();
+    },
+    pay: function (el, api) {
+      api.answer('pay', function (s) { s.org.billingModel = el.getAttribute('data-k'); s.planStale = true; });
+    },
+    week: function (el, api) {
       api.set(function (s) {
-        if (k === 'hoursPerDay' || k === 'horizonWeeks') s.org[k] = Math.max(1, Number(el.value) || 1);
-        else if (k === 'weekPattern') {
-          var prev = P.weekHours(s.org).days;
-          s.org.weekPattern = el.value;
-          if (el.value === 'custom') s.org.workDays = prev.slice();
-        } else s.org[k] = el.value;
+        var prev = P.weekHours(s.org).days, key = el.getAttribute('data-k');
+        s.org.weekPattern = key;
+        if (key === 'custom') s.org.workDays = prev.slice();
         s.planStale = true;
       });
+      focusOk();
     },
     'org-day': function (el, api) {
       var d = Number(el.getAttribute('data-d'));
@@ -3271,8 +3848,22 @@ module.exports = {
         s.planStale = true;
       });
     },
-    budget: function (el, api) { api.set(function (s) { s.budget[el.getAttribute('data-k')] = Math.max(0, Number(el.value) || 0); }); },
+    horizon: function (el, api) {
+      api.answer('horizon', function (s) { s.org.horizonWeeks = Number(el.getAttribute('data-n')); s.planStale = true; });
+    },
+    currency: function (el, api) {
+      api.answer('currency', function (s) { s.org.currency = el.getAttribute('data-k'); });
+    },
+    budget: function (el, api) {
+      api.patch(function (s) { s.budget[el.getAttribute('data-k')] = Math.max(0, Number(el.value) || 0); });
+    },
+    'budget-sample': function (el, api) {
+      api.set(function (s) { if (s.budgetHint) s.budget = { amount: s.budgetHint.amount, spent: s.budgetHint.spent }; });
+      focusOk();
+    },
 
+    /* team & work */
+    generic: function (el, api) { api.set(function (s) { s.org.genericLabels = el.checked; }); },
     person: function (el, api) {
       var id = el.getAttribute('data-id'), k = el.getAttribute('data-k');
       api.patch(function (s) {
@@ -3281,9 +3872,7 @@ module.exports = {
         p[k] = (k === 'name' || k === 'role') ? el.value.trim() : Math.max(0, Number(el.value) || 0);
         dirty(s);
       });
-      if (k === 'name') {
-        [].forEach.call(document.querySelectorAll('#tb-work option[value="' + id + '"]'), function (o) { o.textContent = el.value.trim() || 'Unnamed'; });
-      }
+      relabel(api.state);
       teamTotals(api.state);
     },
     work: function (el, api) {
@@ -3297,6 +3886,7 @@ module.exports = {
         else w[k] = el.value.trim();
         dirty(s);
       });
+      relabel(api.state);
       teamTotals(api.state);
     },
     'add-person': function (el, api) {
@@ -3304,13 +3894,15 @@ module.exports = {
         s.people.push({ id: 'p' + (s.seq++), name: '', role: '', capacity: P.weekHours(s.org).hours, costRate: 0, billRate: 0 });
         dirty(s);
       });
-      var last = document.querySelector('#tb-people tr:last-child input');
+      // Role first: it is the one thing a generic reference needs.
+      var last = document.querySelector('#tb-people tr:last-child input[data-k="role"]');
       if (last) last.focus();
     },
     'add-work': function (el, api) {
       api.set(function (s) {
-        var ind = C.INDUSTRIES.filter(function (i) { return i.key === s.org.industry; })[0];
-        s.work.push({ id: 'w' + (s.seq++), title: '', project: '', owner: null, role: '', hours: 8, billable: !!(ind && ind.billable === true) });
+        var ind = industryOf(s);
+        s.work.push({ id: 'w' + (s.seq++), title: '', project: '', owner: null, role: '', hours: 8,
+          billable: !internal(s) && !!(ind && ind.billable === true) });
         dirty(s);
       });
       var last = document.querySelector('#tb-work tr:last-child input');
@@ -3329,6 +3921,7 @@ module.exports = {
       api.set(function (s) { s.work = s.work.filter(function (w) { return w.id !== id; }); dirty(s); });
     },
 
+    /* plan */
     'step-field': function (el, api) {
       var id = el.getAttribute('data-id'), k = el.getAttribute('data-k');
       api.set(function (s) {
@@ -3390,7 +3983,11 @@ module.exports = {
       if (!text) return;
       api.set(function (s) {
         var res = P.refine(text, inputOf(s), s.steps, s.planOpts);
-        s.work = res.input.work; s.steps = res.steps; s.planOpts = res.opts;
+        // Only the lock flags come back: the engine saw labelled names, the saved rows keep what was typed.
+        var locked = {};
+        res.input.work.forEach(function (w) { if (w.locked) locked[w.id] = true; });
+        s.work.forEach(function (w) { if (locked[w.id]) w.locked = true; else delete w.locked; });
+        s.steps = res.steps; s.planOpts = res.opts;
         s.refineLog.push({ text: text, summary: res.summary, ok: res.understood });
       });
       var again = document.getElementById('refine-input');
@@ -3398,12 +3995,13 @@ module.exports = {
     },
     'goto-plan': function (el, api) { api.go(3); },
 
+    /* land */
     'try-zoho': function (el, api) {
       api.patch(function (s) { s.triedZoho = new Date().toISOString(); });
-      window.open(ZOHO_URL, '_blank', 'noopener');
+      window.open(ZOHO_SIGNUP, '_blank', 'noopener');
       var setup = P.buildSetupSteps(inputOf(api.state), api.state.steps);
       api.modal('<h3>Your plan is saved here</h3>' +
-        '<p>Zoho Projects has opened in a new tab. Once you have a portal, come back to this page — the plan and the setup sequence will be exactly as you left them, in this browser.</p>' +
+        '<p>The Zoho Projects sign-up has opened in a new tab. Once you have a portal, come back to this page — the plan and the setup sequence will be exactly as you left them, in this browser.</p>' +
         '<ol class="setup">' + setup.map(function (st) { return '<li><b>' + esc(st.title) + '</b><em>' + esc(st.featureName) + ' · ' + esc(st.tier) + '</em></li>'; }).join('') + '</ol>' +
         '<p>Prefer not to click through it? Copy the hand-off prompt and let the PM Skills plugin do the setup through your own Zoho connection, asking before each change.</p>');
     },
@@ -3416,11 +4014,29 @@ module.exports = {
     'copy-prompt': function (el, api) {
       api.copy(P.buildAgentPrompt(inputOf(api.state), api.state.steps)).then(function () { api.toast('Hand-off prompt copied'); });
     },
+    unlock: function (el, api) {
+      var box = document.getElementById('lead-email'), err = document.getElementById('lead-err');
+      var res = L.checkWorkEmail(box ? box.value : '');
+      if (!res.ok) {
+        if (err) err.textContent = res.reason;
+        if (box) box.focus();
+        return;
+      }
+      api.set(function (s) { s.lead = { email: res.email, domain: res.domain, at: new Date().toISOString() }; });
+      api.toast('Report unlocked');
+    },
+    'lead-change': function (el, api) {
+      api.set(function (s) { s.lead = null; });
+      var box = document.getElementById('lead-email');
+      if (box) box.focus();
+    },
     'export-md': function (el, api) {
+      if (!api.state.lead) return;
       api.download('capacity-plan-' + slug(api.state) + '.md', P.renderReport(inputOf(api.state), api.state.steps), 'text/markdown;charset=utf-8;');
     },
     'export-csv': function (el, api) {
       var s = api.state, inp = inputOf(s), a = P.assess(inp, s.steps);
+      if (!s.lead) return;
       var rows = [['Section', 'Item', 'Detail', 'Hours per week']];
       s.steps.forEach(function (st, i) { rows.push(['Plan', 'Step ' + (i + 1), P.describeStep(st, inp), st.kind === 'hire' ? st.capacity : st.hours]); });
       a.after.rows.forEach(function (r) {
@@ -3444,18 +4060,18 @@ module.exports = {
 
   window.PMWizard.mount({
     id: 'cost-capacity',
-    version: 2,
+    version: 3,
     brand: { mark: 'C&C', title: 'Capacity & Cost Planner', sub: 'PM Skills · cost-capacity-optimization' },
     header: [{ label: 'How it works', act: 'how' }],
     hint: function () { return 'Deterministic engine · your plan is saved in this browser'; },
     initialState: blank,
     actions: actions,
     onDone: function (api) {
-      api.modal('<h3>Saved</h3><p>Your plan stays in this browser until you press Reset. Come back any time to adjust it, export it, or take it into Zoho Projects.</p>');
+      api.modal('<h3>Saved</h3><p>Your plan stays in this browser until you press Reset. Come back any time to adjust it, download the report, or take it into Zoho Projects.</p>');
     },
     steps: [
       { id: 'problem', title: 'Problem', render: renderScenario, canAdvance: function (s) { return !!s.scenario; } },
-      { id: 'context', title: 'Context', render: renderContext, canAdvance: function (s) { return !!s.org.industry; } },
+      { id: 'context', title: 'Context', render: renderContext, canAdvance: contextDone },
       { id: 'team', title: 'Team & work', render: renderTeam,
         canAdvance: function (s) { return s.people.length > 0 && s.work.some(function (w) { return w.hours > 0; }); } },
       { id: 'plan', title: 'Plan', render: renderPlan,

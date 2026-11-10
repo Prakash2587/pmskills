@@ -1,0 +1,109 @@
+/* ============================================================================
+ * PM Skills — the look every page shares: colour tokens for light and dark,
+ * type, buttons, the theme toggle and the "copied" state.
+ * Cool neutrals, hairlines and one red kept for the main action on a screen.
+ * ========================================================================== */
+
+:root {
+  color-scheme: light;
+  --bg: #f5f6f8;
+  --panel: #ffffff;
+  --soft: #f5f6f8;
+  --chip: #eceef2;
+  --line: #e1e4e9;
+  --line-strong: #c9ced6;
+  --ink: #0f1116;
+  --muted: #596070;
+  --faint: #8a91a0;
+  --accent: #d92520;
+  --accent-hover: #bf1e1a;
+  --accent-text: #c8211d;
+  --accent-soft: rgba(217, 37, 32, 0.07);
+  --accent-line: rgba(217, 37, 32, 0.38);
+  --ok: #0c7a43;
+  --ok-soft: #eaf6ef;
+  --ok-line: #bfe2cd;
+  --warn: #8f5600;
+  --warn-soft: #fdf5e4;
+  --warn-line: #efd9a8;
+  --err: #b42318;
+  --err-soft: #fdecea;
+  --err-line: #f2c4be;
+  --info: #3a46b4;
+  --info-soft: #eceefc;
+  --track: #e6e9ee;
+  --barfill: #98a0ad;
+  --shadow: 0 1px 2px rgba(15, 17, 22, 0.05), 0 14px 36px rgba(15, 17, 22, 0.09);
+  --font: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --r: 6px;
+  --r-lg: 10px;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0c0d10;
+  --panel: #14161a;
+  --soft: #1a1d22;
+  --chip: #23272e;
+  --line: #2a2e36;
+  --line-strong: #3b404a;
+  --ink: #eceef2;
+  --muted: #a2a9b6;
+  --faint: #757c8a;
+  --accent-text: #ff6f67;
+  --accent-soft: rgba(255, 111, 103, 0.1);
+  --accent-line: rgba(255, 111, 103, 0.42);
+  --ok: #4cc38a;
+  --ok-soft: #11241b;
+  --ok-line: #1f4a33;
+  --warn: #e0a84a;
+  --warn-soft: #272011;
+  --warn-line: #4d3c1c;
+  --err: #ff8479;
+  --err-soft: #2b1614;
+  --err-line: #56241f;
+  --info: #9ea8ff;
+  --info-soft: #1b1e38;
+  --track: #262a31;
+  --barfill: #606877;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 14px 36px rgba(0, 0, 0, 0.5);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 15px; line-height: 1.55;
+  -webkit-font-smoothing: antialiased; }
+a { color: var(--accent-text); text-decoration: none; }
+a:hover { text-decoration: underline; }
+b, strong { font-weight: 600; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* Small uppercase label that opens a section */
+.eyebrow { font: 500 11px/1.4 var(--mono); letter-spacing: 0.09em; text-transform: uppercase; color: var(--faint); }
+
+/* Buttons — one primary per screen; everything else is quiet */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 36px; padding: 0 14px;
+  border: 1px solid var(--line-strong); border-radius: var(--r); background: var(--panel); color: var(--ink);
+  font: 500 13.5px/1 var(--font); cursor: pointer; white-space: nowrap; text-decoration: none;
+  transition: background 0.12s, border-color 0.12s, color 0.12s; }
+.btn:hover { background: var(--soft); border-color: var(--faint); text-decoration: none; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+.btn.primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+.btn.ghost { background: transparent; border-color: transparent; color: var(--muted); }
+.btn.ghost:hover { background: var(--chip); color: var(--ink); border-color: transparent; }
+.btn.small { height: 30px; padding: 0 11px; font-size: 12.5px; }
+.btn.big { height: 46px; padding: 0 22px; font-size: 15px; }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.btn svg { flex-shrink: 0; }
+
+/* A copy button confirms on the button itself: green, with a tick */
+.btn.copied, .btn.copied:hover { background: var(--ok); border-color: var(--ok); color: var(--panel); }
+
+/* Light / dark switch */
+.theme-toggle { width: 36px; padding: 0; color: var(--muted); }
+.theme-toggle .i-sun { display: none; }
+:root[data-theme="dark"] .theme-toggle .i-sun { display: block; }
+:root[data-theme="dark"] .theme-toggle .i-moon { display: none; }
+
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }

@@ -22,13 +22,33 @@
  *   data-enter="name"    Enter key
  *   data-drag-id="x" inside data-drop="name"   drag to reorder → actions.name({from, to}, api)
  *
+ * A step can ask its questions one at a time instead of showing a form:
+ *
+ *   api.convo(el, {
+ *     key: 'ctx',                        // state.ctx = { answered: { id: true }, active: id | null }
+ *     title, sub,
+ *     questions: [{
+ *       id, label,                       // label names the answer once it collapses
+ *       prompt, hint, optional,
+ *       body(state)   -> html,           // the control; mark the field to focus with data-autofocus
+ *       answer(state) -> html,           // the answer as a short sentence
+ *       valid(state)  -> true | 'why not',
+ *       onSkip(state)                    // optional questions: clear the value
+ *     }],
+ *     done: html                         // shown once every question is answered
+ *   });
+ *   PMWizard.convoDone(state.ctx, ids)   // for canAdvance
+ *
+ * Inside a question, fields use data-input (so the value is saved as it is typed) and
+ * Enter confirms. A choice card answers and moves on in one click: api.answer(id, mutate).
+ *
  * State is saved to localStorage on every change and restored on load, so a
  * visitor who leaves to sign up for Zoho Projects finds their plan waiting.
  * ========================================================================== */
 (function (global) {
   'use strict';
 
-  var def, state, root, storeKey, dragId = null, toastTimer = null;
+  var def, state, root, storeKey, dragId = null, toastTimer = null, convoCfg = null;
 
   function esc(s) {
     return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
@@ -66,12 +86,90 @@
     $('wz-hint').innerHTML = def.hint ? def.hint(state) : '';
   }
 
+  /* ---------- conversation: one question at a time ---------- */
+
+  function convoState(key) {
+    if (!state[key] || !state[key].answered) state[key] = { answered: {}, active: null };
+    return state[key];
+  }
+  function convoDone(c, ids) {
+    return !!c && !!c.answered && ids.every(function (id) { return c.answered[id]; });
+  }
+  function convoActive(cfg) {
+    var c = convoState(cfg.key), qs = cfg.questions, i;
+    for (i = 0; i < qs.length; i++) if (qs[i].id === c.active) return qs[i];
+    for (i = 0; i < qs.length; i++) if (!c.answered[qs[i].id]) return qs[i];
+    return null;
+  }
+
+  function convo(el, cfg) {
+    convoCfg = cfg;
+    var c = convoState(cfg.key), active = convoActive(cfg), qs = cfg.questions;
+    var answered = qs.filter(function (q) { return c.answered[q.id]; }).length;
+    var html = '<h2 class="step-title">' + esc(cfg.title) + '</h2>' +
+      (cfg.sub ? '<p class="step-sub">' + esc(cfg.sub) + '</p>' : '') +
+      '<div class="q-progress"><div class="q-progress-bar"><i style="width:' + (answered / qs.length * 100).toFixed(0) + '%"></i></div>' +
+      '<span>' + answered + ' of ' + qs.length + ' answered</span></div><div class="convo">';
+
+    qs.forEach(function (q, i) {
+      if (active && q.id === active.id) {
+        html += '<div class="q-card" id="wz-q"><div class="q-num">' + (i + 1) + '<span>→</span></div><div class="q-body">' +
+          '<h3 class="q-prompt">' + esc(q.prompt) + (q.optional ? ' <em>optional</em>' : '') + '</h3>' +
+          (q.hint ? '<p class="q-hint">' + esc(q.hint) + '</p>' : '') +
+          '<div class="q-control">' + q.body(state) + '</div>' +
+          '<div class="q-error" id="wz-q-err"></div>' +
+          '<div class="q-actions"><button class="btn primary" data-shell="q-ok">OK ✓</button>' +
+          '<span class="q-enter">or press Enter ↵</span>' +
+          (q.optional ? '<button class="btn ghost" data-shell="q-skip">Skip</button>' : '') + '</div></div></div>';
+      } else if (c.answered[q.id]) {
+        html += '<div class="q-row" data-shell="q-edit" data-q="' + esc(q.id) + '" title="Change this answer">' +
+          '<span class="q-tick">✓</span><span class="q-label">' + esc(q.label) + '</span>' +
+          '<span class="q-answer">' + q.answer(state) + '</span><span class="q-change">Change</span></div>';
+      }
+    });
+    if (!active) {
+      html += '<div class="q-done"><div>' + (cfg.done || 'That is everything for this step.') + '</div>' +
+        '<button class="btn primary" data-shell="next" data-autofocus>Continue →</button></div>';
+    }
+    el.innerHTML = html + '</div>';
+  }
+
+  function focusConvo() {
+    var card = $('wz-q'), scope = card || root.querySelector('.q-done');
+    if (!scope) return;
+    var f = scope.querySelector('[data-autofocus]') || scope.querySelector('[data-shell="q-ok"]');
+    if (f) { try { f.focus({ preventScroll: true }); } catch (e) { f.focus(); } }
+    if (scope.scrollIntoView) scope.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }
+
+  /** Close the open question: check it (unless skipping), collapse it, open the next one. */
+  function closeQuestion(skip, mutate) {
+    var cfg = convoCfg;
+    if (!cfg) return;
+    var q = convoActive(cfg);
+    if (!q) return;
+    if (mutate) mutate(state);
+    if (skip) { if (q.onSkip) q.onSkip(state); }
+    else {
+      var ok = q.valid ? q.valid(state) : true;
+      if (ok !== true) {
+        var err = $('wz-q-err');
+        if (err) err.textContent = ok || 'This one is needed to continue.';
+        save();
+        return;
+      }
+    }
+    var c = convoState(cfg.key);
+    c.answered[q.id] = true; c.active = null;
+    save(); render(); focusConvo();
+  }
+
   function render() {
-    $('wz-stepper').style.gridTemplateColumns = 'repeat(' + def.steps.length + ', 1fr)';
+    convoCfg = null;
     $('wz-stepper').innerHTML = def.steps.map(function (s, i) {
       var cls = i < state.step ? 'done' : (i === state.step ? 'active' : '');
       return '<div class="step ' + cls + '"' + (i < state.step ? ' data-shell="go" data-i="' + i + '"' : '') +
-        '><div class="num">' + (i + 1) + '</div><div>' + esc(s.title) + '</div></div>';
+        '><div class="num">' + (i < state.step ? '✓' : (i < 9 ? '0' : '') + (i + 1)) + '</div><div>' + esc(s.title) + '</div></div>';
     }).join('');
     def.steps[state.step].render($('wz-panel'), api);
     refreshNav();
@@ -84,6 +182,7 @@
     save();
     render();
     global.scrollTo(0, 0);
+    if (convoCfg) focusConvo();
   }
 
   var api = {
@@ -94,6 +193,13 @@
     /** Mutate state and save WITHOUT re-rendering — for fields being typed in. */
     patch: function (fn) { fn(state); save(); refreshNav(); },
     go: go,
+    convo: convo,
+    /** Set a value and close the open question in one move — for choice cards. */
+    answer: function (id, mutate) {
+      var q = convoCfg && convoActive(convoCfg);
+      if (q && q.id === id) closeQuestion(false, mutate);
+      else if (mutate) api.set(mutate);
+    },
     next: function () {
       var step = def.steps[state.step];
       if (step.canAdvance && !step.canAdvance(state)) return;
@@ -160,6 +266,12 @@
         else if (what === 'reset') api.reset();
         else if (what === 'close') api.closeModal();
         else if (what === 'go') go(Number(shell.getAttribute('data-i')));
+        else if (what === 'q-ok') closeQuestion(false);
+        else if (what === 'q-skip') closeQuestion(true);
+        else if (what === 'q-edit' && convoCfg) {
+          convoState(convoCfg.key).active = shell.getAttribute('data-q');
+          save(); render(); focusConvo();
+        }
         return;
       }
       if (ev.target.id === 'wz-mask') { api.closeModal(); return; }
@@ -168,6 +280,15 @@
     root.addEventListener('change', function (ev) { act('data-change', ev); });
     root.addEventListener('input', function (ev) { act('data-input', ev); });
     root.addEventListener('keydown', function (ev) {
+      var t = ev.target;
+      if (ev.key === 'Enter' && t.tagName === 'INPUT' && t.type !== 'checkbox' && t.closest('.q-card')) {
+        ev.preventDefault(); closeQuestion(false); return;
+      }
+      // Lettered choice cards answer on their letter, as long as nobody is typing in a field.
+      if (/^[a-z0-9]$/i.test(ev.key) && !ev.metaKey && !ev.ctrlKey && !ev.altKey && !/^(INPUT|SELECT|TEXTAREA)$/.test(t.tagName)) {
+        var card = $('wz-q'), hit = card && card.querySelector('[data-key="' + ev.key.toUpperCase() + '"]');
+        if (hit) { ev.preventDefault(); hit.click(); return; }
+      }
       if (ev.key === 'Enter' && ev.target.closest('[data-enter]')) { ev.preventDefault(); act('data-enter', ev); }
       if (ev.key === 'Escape') api.closeModal();
     });
@@ -221,7 +342,8 @@
       '<div class="app">' +
         '<header class="app-hd"><div class="brand"><div class="brand-mark">' + esc(def.brand.mark) + '</div>' +
           '<div><h1>' + esc(def.brand.title) + ' <span class="sub">/ ' + esc(def.brand.sub) + '</span></h1></div></div>' +
-          '<div class="hd-actions">' + extra + '<button class="btn" data-shell="reset">Reset</button></div></header>' +
+          '<div class="hd-actions">' + extra + '<button class="btn ghost" data-shell="reset">Reset</button>' +
+          (global.PMUI ? global.PMUI.themeToggle() : '') + '</div></header>' +
         '<div class="stepper" id="wz-stepper"></div>' +
         '<main class="panel" id="wz-panel"></main>' +
         '<div class="foot-nav"><button class="btn" id="wz-back" data-shell="back">← Back</button>' +
@@ -235,8 +357,16 @@
     wire();
     enter();
     render();
+
+    // A second tab on the same tool would otherwise keep its own older copy of the
+    // session and show different answers (a different currency, say) from this one.
+    global.addEventListener('storage', function (ev) {
+      if (ev.key !== storeKey || !ev.newValue) return;
+      var fresh = load();
+      if (fresh) { state = fresh; render(); }
+    });
     return api;
   }
 
-  global.PMWizard = { mount: mount, esc: esc };
+  global.PMWizard = { mount: mount, esc: esc, convoDone: convoDone };
 })(window);

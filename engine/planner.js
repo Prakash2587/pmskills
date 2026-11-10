@@ -29,9 +29,47 @@ const r1 = n => Math.round(n * 10) / 10;
 const clone = x => JSON.parse(JSON.stringify(x));
 const fmtH = n => `${r1(n)}h`;
 
+/* The one place a figure becomes text, so a plan cannot show two currencies.
+ * `org.currency` is an ISO code from the catalogue; anything else is used as a
+ * literal prefix. */
+function currencySymbol(org = {}) {
+  const cur = org.currency || '';
+  const known = C.CURRENCIES.find(c => c.code === cur);
+  return known ? known.symbol : cur;
+}
 function money(input, n) {
-  const cur = (input.org && input.org.currency) || '';
-  return `${cur}${Math.round(n).toLocaleString('en-US')}`;
+  return `${currencySymbol(input.org)}${Math.round(num(n)).toLocaleString('en-US')}`;
+}
+
+const isInternal = input => !!input.org && input.org.billingModel === 'internal';
+
+/* --- labels ----------------------------------------------------------------
+ * Names are optional. A blank name becomes a generic reference built from the
+ * role ("Consultant #3"), a blank project becomes "Project #2". With
+ * org.genericLabels on, EVERY person and project is referred to that way, so a
+ * plan can be built and shared without a single real name in it. */
+function withLabels(input) {
+  const generic = !!(input.org && input.org.genericLabels);
+  const perRole = new Map();
+  const people = input.people.map(p => {
+    const role = (p.role || '').trim();
+    const n = (perRole.get(role.toLowerCase()) || 0) + 1;
+    perRole.set(role.toLowerCase(), n);
+    const typed = (p.name || '').trim();
+    return { ...p, name: generic || !typed ? `${role || 'Person'} #${n}` : typed };
+  });
+
+  const projects = new Map();
+  for (const w of input.work) {
+    const key = (w.project || '').trim();
+    if (!projects.has(key)) projects.set(key, `Project #${projects.size + 1}`);
+  }
+  const work = input.work.map((w, i) => {
+    const key = (w.project || '').trim();
+    return { ...w, title: (w.title || '').trim() || `Work item #${i + 1}`,
+      project: generic || !key ? projects.get(key) : key };
+  });
+  return { ...input, people, work };
 }
 
 function index(people) { return new Map(people.map(p => [p.id, p])); }
@@ -266,6 +304,11 @@ function billableNote(input, load) {
   const total = load.totals.allocated;
   if (!total) return null;
   const ind = C.INDUSTRIES.find(i => i.key === input.org.industry);
+  if (isInternal(input)) {
+    return { id: 'billable', grade: 'reported', feature: 'timesheets',
+      headline: 'Billable ratio is left out — this work is not client-billed',
+      detail: 'With no client paying by the hour, a billable percentage would be invented. Capacity and delivery predictability are the measures that matter here.' };
+  }
   if (ind && ind.billable === false) {
     return { id: 'billable', grade: 'reported', feature: 'timesheets',
       headline: `Billable ratio is not a useful measure for ${ind.label.toLowerCase()}`,
@@ -279,6 +322,8 @@ function billableNote(input, load) {
 }
 
 function budgetView(input, weeklyCost) {
+  // Internal work is planned on capacity; the tool does not ask for a budget there.
+  if (isInternal(input)) return null;
   const b = input.budget || {};
   const amount = num(b.amount);
   if (!(amount > 0)) return null;
@@ -520,7 +565,7 @@ function buildZohoPayload(input, steps = []) {
       name: w.title,
       owner: owner ? owner.name : null,
       work_hours_per_week: hhmm(w.hours),
-      billing_status: w.billable ? 'Billable' : 'Non-Billable',
+      billing_status: w.billable && !isInternal(input) ? 'Billable' : 'Non-Billable',
     });
   }
 
@@ -534,7 +579,8 @@ function buildZohoPayload(input, steps = []) {
     users: a.applied.people.map(p => ({
       name: p.name, role: p.role, to_be_hired: !!p.isHire || undefined,
       weekly_capacity_hours: num(p.capacity),
-      budget: { cost_per_hour: num(p.costRate) || null, rate_per_hour: num(p.billRate) || null },
+      budget: { cost_per_hour: num(p.costRate) || null,
+        rate_per_hour: isInternal(input) ? null : num(p.billRate) || null },
     })),
     projects: [...projects.entries()].map(([name, tasks]) => ({
       name,
@@ -543,6 +589,7 @@ function buildZohoPayload(input, steps = []) {
     })),
     budget: a.budget ? {
       planned_cost: { amount: a.budget.after.amount, currency: input.org.currency || '' },
+      spent_to_date: a.budget.after.spent,
       note: 'Set on the project being tracked; Zoho then reports actual and forecasted cost against it.',
     } : null,
     verify_with: [{ call: 'GET /reports/workload', purpose: 'Confirm Zoho\'s own under / optimal / over verdict matches this plan once time is being logged.' }],
@@ -570,6 +617,18 @@ function buildSetupSteps(input, steps = []) {
   out.push({ feature: 'workload', title: 'Open the Workload report',
     detail: 'Zoho labels each person under, optimal or over against the real calendar. That verdict replaces this estimate.' });
   return out.map(s => ({ ...s, featureName: F[s.feature].name, tier: F[s.feature].tier, api: F[s.feature].api }));
+}
+
+/** Findings grouped by the Zoho Projects feature that would show them for real. */
+function buildFeatureMap(input, steps = []) {
+  const out = new Map();
+  for (const f of assess(input, steps).findings) {
+    const z = C.ZOHO_FEATURES[f.feature];
+    if (!z) continue;
+    if (!out.has(f.feature)) out.set(f.feature, { key: f.feature, ...z, covers: [] });
+    out.get(f.feature).covers.push(f.headline);
+  }
+  return [...out.values()];
 }
 
 /** A hand-off for the installed skill: carry the plan out through the user's own MCP. */
@@ -736,11 +795,15 @@ function renderReport(input, steps = []) {
 
   L.push('', '## Setting this up in Zoho Projects', '');
   buildSetupSteps(input, steps).forEach((s, i) => L.push(`${i + 1}. **${s.title}** (${s.featureName}) — ${s.detail}`));
+
+  L.push('', '## Where each finding lives in Zoho Projects', '');
+  for (const f of buildFeatureMap(input, steps)) L.push(`- **${f.name}** (${f.tier}) — ${f.does}`);
   return L.join('\n');
 }
 
 module.exports = {
   computeLoad, proposePlan, applyPlan, assess, validate, describeStep, refine,
-  buildZohoPayload, buildSetupSteps, buildAgentPrompt, renderReport, weekHours,
+  buildZohoPayload, buildSetupSteps, buildFeatureMap, buildAgentPrompt, renderReport, weekHours,
+  withLabels, money, currencySymbol,
   REFINE_EXAMPLES, SUSTAINED_HOURS, SUSTAINED_WEEKS,
 };

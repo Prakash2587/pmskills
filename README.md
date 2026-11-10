@@ -72,11 +72,12 @@ skills/
 knowledge/                              sourced benchmarks, doctrine, practitioner patterns, catalogue (data only)
 engine/                                 deterministic engine + tests (planner.js powers the web tool)
 site/
-  index.html                            landing page
+  index.html                            skill gallery: one tile per skill, install, request a skill
   wizard/                               reusable six-step wizard shell — shared by every skill's tool
-  tools/cost-capacity.*                 this skill's planner: problem -> context -> team & work -> plan -> validate -> land
+  tools/cost-capacity.*                 this skill's planner: problem -> context (asked one question at a
+                                        time) -> team & work -> plan -> validate -> land
 dist/capacity-cost-planner.html         the planner as ONE self-contained file — download and double-click
-build/                                  bundle.js (engine -> browser), standalone.js (-> dist/)
+build/                                  bundle.js (engine -> browser), stamp.js (cache-busting), standalone.js (-> dist/)
 docs/                                   install and contribution guides
 ```
 
@@ -87,6 +88,7 @@ exist to serve the new-user, no-account path; the skill itself needs neither.
 
 Open the [hosted planner](https://pmskills-920403142.development.catalystserverless.com/app/tools/cost-capacity.html),
 or download [`dist/capacity-cost-planner.html`](dist/capacity-cost-planner.html) and open it — it works offline.
+The offline file is regenerated only at design milestones, so it can be a round behind the hosted planner.
 
 ## License
 

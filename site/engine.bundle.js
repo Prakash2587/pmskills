@@ -708,6 +708,24 @@ const WEEK_PATTERNS = [
 
 const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
+/* --- currencies -----------------------------------------------------------
+ * The org stores the ISO `code`; every figure is printed through the one
+ * formatter in engine/planner.js, so a plan cannot show two currencies. */
+
+const CURRENCIES = [
+  { code: 'USD', symbol: '$', name: 'US dollar' },
+  { code: 'EUR', symbol: '€', name: 'Euro' },
+  { code: 'GBP', symbol: '£', name: 'Pound sterling' },
+  { code: 'INR', symbol: '₹', name: 'Indian rupee' },
+  { code: 'AUD', symbol: 'A$', name: 'Australian dollar' },
+  { code: 'CAD', symbol: 'C$', name: 'Canadian dollar' },
+  { code: 'SGD', symbol: 'S$', name: 'Singapore dollar' },
+  { code: 'AED', symbol: 'AED ', name: 'UAE dirham' },
+  { code: 'SAR', symbol: 'SAR ', name: 'Saudi riyal' },
+  { code: 'JPY', symbol: '¥', name: 'Japanese yen' },
+  { code: 'ZAR', symbol: 'R', name: 'South African rand' },
+];
+
 /* --- Zoho Projects features a finding binds to ------------------------------
  * Only features confirmed in the API research. `tier` is the standalone gating. */
 
@@ -842,7 +860,7 @@ const SCENARIOS = [
   },
 ];
 
-module.exports = { INDUSTRIES, WEEK_PATTERNS, DAY_NAMES, ZOHO_FEATURES, SCENARIOS };
+module.exports = { INDUSTRIES, WEEK_PATTERNS, DAY_NAMES, CURRENCIES, ZOHO_FEATURES, SCENARIOS };
 
   });
 
@@ -1639,9 +1657,47 @@ const r1 = n => Math.round(n * 10) / 10;
 const clone = x => JSON.parse(JSON.stringify(x));
 const fmtH = n => `${r1(n)}h`;
 
+/* The one place a figure becomes text, so a plan cannot show two currencies.
+ * `org.currency` is an ISO code from the catalogue; anything else is used as a
+ * literal prefix. */
+function currencySymbol(org = {}) {
+  const cur = org.currency || '';
+  const known = C.CURRENCIES.find(c => c.code === cur);
+  return known ? known.symbol : cur;
+}
 function money(input, n) {
-  const cur = (input.org && input.org.currency) || '';
-  return `${cur}${Math.round(n).toLocaleString('en-US')}`;
+  return `${currencySymbol(input.org)}${Math.round(num(n)).toLocaleString('en-US')}`;
+}
+
+const isInternal = input => !!input.org && input.org.billingModel === 'internal';
+
+/* --- labels ----------------------------------------------------------------
+ * Names are optional. A blank name becomes a generic reference built from the
+ * role ("Consultant #3"), a blank project becomes "Project #2". With
+ * org.genericLabels on, EVERY person and project is referred to that way, so a
+ * plan can be built and shared without a single real name in it. */
+function withLabels(input) {
+  const generic = !!(input.org && input.org.genericLabels);
+  const perRole = new Map();
+  const people = input.people.map(p => {
+    const role = (p.role || '').trim();
+    const n = (perRole.get(role.toLowerCase()) || 0) + 1;
+    perRole.set(role.toLowerCase(), n);
+    const typed = (p.name || '').trim();
+    return { ...p, name: generic || !typed ? `${role || 'Person'} #${n}` : typed };
+  });
+
+  const projects = new Map();
+  for (const w of input.work) {
+    const key = (w.project || '').trim();
+    if (!projects.has(key)) projects.set(key, `Project #${projects.size + 1}`);
+  }
+  const work = input.work.map((w, i) => {
+    const key = (w.project || '').trim();
+    return { ...w, title: (w.title || '').trim() || `Work item #${i + 1}`,
+      project: generic || !key ? projects.get(key) : key };
+  });
+  return { ...input, people, work };
 }
 
 function index(people) { return new Map(people.map(p => [p.id, p])); }
@@ -1876,6 +1932,11 @@ function billableNote(input, load) {
   const total = load.totals.allocated;
   if (!total) return null;
   const ind = C.INDUSTRIES.find(i => i.key === input.org.industry);
+  if (isInternal(input)) {
+    return { id: 'billable', grade: 'reported', feature: 'timesheets',
+      headline: 'Billable ratio is left out — this work is not client-billed',
+      detail: 'With no client paying by the hour, a billable percentage would be invented. Capacity and delivery predictability are the measures that matter here.' };
+  }
   if (ind && ind.billable === false) {
     return { id: 'billable', grade: 'reported', feature: 'timesheets',
       headline: `Billable ratio is not a useful measure for ${ind.label.toLowerCase()}`,
@@ -1889,6 +1950,8 @@ function billableNote(input, load) {
 }
 
 function budgetView(input, weeklyCost) {
+  // Internal work is planned on capacity; the tool does not ask for a budget there.
+  if (isInternal(input)) return null;
   const b = input.budget || {};
   const amount = num(b.amount);
   if (!(amount > 0)) return null;
@@ -2130,7 +2193,7 @@ function buildZohoPayload(input, steps = []) {
       name: w.title,
       owner: owner ? owner.name : null,
       work_hours_per_week: hhmm(w.hours),
-      billing_status: w.billable ? 'Billable' : 'Non-Billable',
+      billing_status: w.billable && !isInternal(input) ? 'Billable' : 'Non-Billable',
     });
   }
 
@@ -2144,7 +2207,8 @@ function buildZohoPayload(input, steps = []) {
     users: a.applied.people.map(p => ({
       name: p.name, role: p.role, to_be_hired: !!p.isHire || undefined,
       weekly_capacity_hours: num(p.capacity),
-      budget: { cost_per_hour: num(p.costRate) || null, rate_per_hour: num(p.billRate) || null },
+      budget: { cost_per_hour: num(p.costRate) || null,
+        rate_per_hour: isInternal(input) ? null : num(p.billRate) || null },
     })),
     projects: [...projects.entries()].map(([name, tasks]) => ({
       name,
@@ -2153,6 +2217,7 @@ function buildZohoPayload(input, steps = []) {
     })),
     budget: a.budget ? {
       planned_cost: { amount: a.budget.after.amount, currency: input.org.currency || '' },
+      spent_to_date: a.budget.after.spent,
       note: 'Set on the project being tracked; Zoho then reports actual and forecasted cost against it.',
     } : null,
     verify_with: [{ call: 'GET /reports/workload', purpose: 'Confirm Zoho\'s own under / optimal / over verdict matches this plan once time is being logged.' }],
@@ -2180,6 +2245,18 @@ function buildSetupSteps(input, steps = []) {
   out.push({ feature: 'workload', title: 'Open the Workload report',
     detail: 'Zoho labels each person under, optimal or over against the real calendar. That verdict replaces this estimate.' });
   return out.map(s => ({ ...s, featureName: F[s.feature].name, tier: F[s.feature].tier, api: F[s.feature].api }));
+}
+
+/** Findings grouped by the Zoho Projects feature that would show them for real. */
+function buildFeatureMap(input, steps = []) {
+  const out = new Map();
+  for (const f of assess(input, steps).findings) {
+    const z = C.ZOHO_FEATURES[f.feature];
+    if (!z) continue;
+    if (!out.has(f.feature)) out.set(f.feature, { key: f.feature, ...z, covers: [] });
+    out.get(f.feature).covers.push(f.headline);
+  }
+  return [...out.values()];
 }
 
 /** A hand-off for the installed skill: carry the plan out through the user's own MCP. */
@@ -2346,14 +2423,68 @@ function renderReport(input, steps = []) {
 
   L.push('', '## Setting this up in Zoho Projects', '');
   buildSetupSteps(input, steps).forEach((s, i) => L.push(`${i + 1}. **${s.title}** (${s.featureName}) — ${s.detail}`));
+
+  L.push('', '## Where each finding lives in Zoho Projects', '');
+  for (const f of buildFeatureMap(input, steps)) L.push(`- **${f.name}** (${f.tier}) — ${f.does}`);
   return L.join('\n');
 }
 
 module.exports = {
   computeLoad, proposePlan, applyPlan, assess, validate, describeStep, refine,
-  buildZohoPayload, buildSetupSteps, buildAgentPrompt, renderReport, weekHours,
+  buildZohoPayload, buildSetupSteps, buildFeatureMap, buildAgentPrompt, renderReport, weekHours,
+  withLabels, money, currencySymbol,
   REFINE_EXAMPLES, SUSTAINED_HOURS, SUSTAINED_WEEKS,
 };
+
+  });
+
+  def("engine/lead", function (module, exports, require) {
+'use strict';
+/* ============================================================================
+ * Work-email rule for the report gate.
+ * ----------------------------------------------------------------------------
+ * The gate asks for a company address, so free and throwaway mailboxes are
+ * refused by domain. This is a blocklist, not verification: it cannot tell
+ * whether a company domain or a mailbox really exists.
+ * ========================================================================== */
+
+const FREE_DOMAINS = [
+  'gmail.com', 'googlemail.com', 'yahoo.com', 'yahoo.co.in', 'yahoo.co.uk', 'yahoo.in', 'ymail.com', 'rocketmail.com',
+  'outlook.com', 'outlook.in', 'hotmail.com', 'hotmail.co.uk', 'live.com', 'live.in', 'msn.com',
+  'icloud.com', 'me.com', 'mac.com', 'aol.com', 'proton.me', 'protonmail.com', 'pm.me', 'tutanota.com', 'tuta.io',
+  'zoho.com', 'zohomail.com', 'zohomail.in', 'gmx.com', 'gmx.net', 'gmx.de', 'web.de', 'mail.com', 'email.com',
+  'yandex.com', 'yandex.ru', 'mail.ru', 'rediffmail.com', 'fastmail.com', 'hey.com', 'duck.com',
+  'qq.com', '163.com', '126.com', 'sina.com', 'naver.com', 'hanmail.net', 'daum.net',
+  'comcast.net', 'verizon.net', 'att.net', 'sbcglobal.net', 'btinternet.com', 'orange.fr', 'wanadoo.fr', 'free.fr',
+  't-online.de', 'libero.it', 'uol.com.br', 'bol.com.br',
+];
+
+const DISPOSABLE_DOMAINS = [
+  'mailinator.com', 'guerrillamail.com', '10minutemail.com', 'tempmail.com', 'temp-mail.org', 'yopmail.com',
+  'trashmail.com', 'sharklasers.com', 'getnada.com', 'dispostable.com', 'maildrop.cc', 'throwawaymail.com',
+];
+
+const PLACEHOLDER_DOMAINS = ['example.com', 'example.org', 'example.net', 'test.com', 'email.com', 'domain.com'];
+
+const SHAPE = /^[^\s@]+@([a-z0-9](?:[a-z0-9-]*[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)+)$/i;
+
+/** Returns { ok, email, domain, reason }. `reason` is ready to show to a person. */
+function checkWorkEmail(raw) {
+  const email = String(raw == null ? '' : raw).trim().toLowerCase();
+  if (!email) return { ok: false, email, domain: '', reason: 'Enter your work email to unlock the report.' };
+  const m = email.match(SHAPE);
+  if (!m) return { ok: false, email, domain: '', reason: 'That does not look like an email address.' };
+  const domain = m[1];
+  if (FREE_DOMAINS.includes(domain)) {
+    return { ok: false, email, domain, reason: `${domain} is a personal mailbox. Please use your company email.` };
+  }
+  if (DISPOSABLE_DOMAINS.includes(domain) || PLACEHOLDER_DOMAINS.includes(domain)) {
+    return { ok: false, email, domain, reason: `${domain} is not a company mailbox. Please use your company email.` };
+  }
+  return { ok: true, email, domain, reason: '' };
+}
+
+module.exports = { checkWorkEmail, FREE_DOMAINS, DISPOSABLE_DOMAINS };
 
   });
 
@@ -2361,6 +2492,7 @@ module.exports = {
     digest: req('', './engine/digest'),
     recommend: req('', './engine/recommend'),
     planner: req('', './engine/planner'),
+    lead: req('', './engine/lead'),
     knowledge: {
       benchmarks: req('', './knowledge/benchmarks'),
       doctrine: req('', './knowledge/doctrine'),

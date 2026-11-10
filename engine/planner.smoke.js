@@ -197,5 +197,92 @@ console.log('\n--- calendar, payload, hand-off ---');
   check('report states the data is self-reported', md.includes('self-reported'));
 }
 
+/* ------------------------------------------------------------------ */
+console.log('\n--- one currency everywhere ---');
+{
+  const input = inputFor('budget', { currency: 'AUD' });
+  const steps = P.proposePlan(input);
+  const everything = [
+    JSON.stringify(P.assess(input, steps).findings), P.assess(input, steps).headline,
+    JSON.stringify(P.validate(input, steps)), JSON.stringify(P.buildSetupSteps(input, steps)),
+    P.renderReport(input, steps),
+  ].join('\n');
+  const figures = everything.match(/(?:A\$|C\$|S\$|[$€£₹¥]|AED |SAR )\d[\d,]*/g) || [];
+  check('money is printed', figures.length > 5, figures.length);
+  check('every figure carries the chosen currency (A$)', figures.every(f => f.startsWith('A$')),
+    [...new Set(figures.filter(f => !f.startsWith('A$')))].join(' '));
+  check('P.money is the same formatter the findings use', P.money(input, 1455000) === 'A$1,455,000');
+  check('payload carries the ISO code, not a symbol', P.buildZohoPayload(input, steps).budget.planned_cost.currency === 'AUD');
+  check('an unknown currency is used as a literal prefix', P.money({ org: { currency: 'kr ' } }, 1200) === 'kr 1,200');
+}
+
+/* ------------------------------------------------------------------ */
+console.log('\n--- names are optional ---');
+{
+  const raw = inputFor('budget');
+  raw.people[1].name = '';                      // Karan -> first "Consultant"
+  raw.people.push({ id: 'p6', name: '', role: 'Consultant', capacity: 40, costRate: 0, billRate: 0 });
+  raw.people.push({ id: 'p7', name: '  ', role: '', capacity: 40, costRate: 0, billRate: 0 });
+  raw.work[0].project = '';
+  raw.work.push({ id: 'w10', title: '', project: '', owner: 'p6', hours: 4, billable: true });
+
+  const named = P.withLabels(raw);
+  const nameOf = id => named.people.find(p => p.id === id).name;
+  check('a typed name is kept', nameOf('p1') === 'Nisha Rao');
+  check('a blank name becomes role + ordinal', nameOf('p2') === 'Consultant #1', nameOf('p2'));
+  check('the ordinal counts everyone in that role', nameOf('p6') === 'Consultant #3', nameOf('p6'));
+  check('no role falls back to Person #n', nameOf('p7') === 'Person #1', nameOf('p7'));
+  check('a blank project gets a generic reference', /^Project #\d+$/.test(named.work[0].project), named.work[0].project);
+  check('blank projects share one reference', named.work[0].project === named.work.find(w => w.id === 'w10').project);
+  check('a typed project is kept', named.work[1].project === 'Transformation programme');
+  check('a blank work title is numbered', named.work.find(w => w.id === 'w10').title === 'Work item #10');
+  check('labelling twice changes nothing', JSON.stringify(P.withLabels(named)) === JSON.stringify(named));
+  check('the input is not mutated', raw.people[1].name === '');
+
+  const anon = P.withLabels({ ...raw, org: { ...raw.org, genericLabels: true } });
+  check('generic labels replace every person name',
+    anon.people.every(p => /^(Lead Consultant|Consultant|Analyst|Person) #\d+$/.test(p.name)), anon.people.map(p => p.name).join());
+  check('generic labels replace every project name', anon.work.every(w => /^Project #\d+$/.test(w.project)));
+  check('distinct projects stay distinct', new Set(anon.work.map(w => w.project)).size === new Set(raw.work.map(w => w.project)).size);
+  const out = [P.renderReport(anon, P.proposePlan(anon)), JSON.stringify(P.buildZohoPayload(anon, P.proposePlan(anon))),
+    P.buildAgentPrompt(anon, P.proposePlan(anon))].join('\n');
+  check('no real name or project reaches the report, payload or hand-off',
+    !/Nisha|Karan|Priya|Omar|Lina|Transformation/.test(out));
+  check('"Unnamed" never appears', !/Unnamed/.test(out + P.renderReport(named, P.proposePlan(named))));
+  check('refine understands a generic reference',
+    P.refine('move Solution design to Consultant #2', anon, []).understood);
+}
+
+/* ------------------------------------------------------------------ */
+console.log('\n--- work that is not client-billed ---');
+{
+  const input = inputFor('budget', { billingModel: 'internal' });
+  const steps = P.proposePlan(input);
+  const a = P.assess(input, steps);
+  check('no budget forecast is produced', a.budget === null && !a.findings.some(f => f.id === 'budget'));
+  check('no budget rule is validated', !P.validate(input, steps).some(v => v.rule === 'Forecast is within budget'));
+  check('billable ratio is left out, not scored',
+    a.findings.find(f => f.id === 'billable').headline.includes('not client-billed'));
+  const payload = P.buildZohoPayload(input, steps);
+  check('payload has no budget, billing rate or billable task',
+    payload.budget === null && payload.users.every(u => u.budget.rate_per_hour === null) &&
+    payload.projects.every(p => p.tasks.every(t => t.billing_status === 'Non-Billable')));
+  check('weekly cost is still reported', a.before.totals.weeklyCost === 9150);
+  check('setup sequence has no budget step', !P.buildSetupSteps(input, steps).some(s => s.feature === 'budget'));
+}
+
+/* ------------------------------------------------------------------ */
+console.log('\n--- findings mapped to Zoho Projects features ---');
+{
+  const input = inputFor('budget');
+  const steps = P.proposePlan(input);
+  const map = P.buildFeatureMap(input, steps);
+  const total = map.reduce((n, f) => n + f.covers.length, 0);
+  check('each feature is listed once', new Set(map.map(f => f.key)).size === map.length);
+  check('every finding is covered by exactly one feature', total === P.assess(input, steps).findings.length, total);
+  check('each feature says what it does and which plan has it', map.every(f => f.name && f.does && f.tier));
+  check('the budget finding maps to Project Budget', map.find(f => f.key === 'budget').covers[0].includes('budget'));
+}
+
 console.log(`\n${failures === 0 ? 'ALL PASS' : failures + ' FAILURE(S)'}\n`);
 process.exit(failures === 0 ? 0 : 1);

@@ -67,6 +67,24 @@ const WEEK_PATTERNS = [
 
 const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
+/* --- currencies -----------------------------------------------------------
+ * The org stores the ISO `code`; every figure is printed through the one
+ * formatter in engine/planner.js, so a plan cannot show two currencies. */
+
+const CURRENCIES = [
+  { code: 'USD', symbol: '$', name: 'US dollar' },
+  { code: 'EUR', symbol: '€', name: 'Euro' },
+  { code: 'GBP', symbol: '£', name: 'Pound sterling' },
+  { code: 'INR', symbol: '₹', name: 'Indian rupee' },
+  { code: 'AUD', symbol: 'A$', name: 'Australian dollar' },
+  { code: 'CAD', symbol: 'C$', name: 'Canadian dollar' },
+  { code: 'SGD', symbol: 'S$', name: 'Singapore dollar' },
+  { code: 'AED', symbol: 'AED ', name: 'UAE dirham' },
+  { code: 'SAR', symbol: 'SAR ', name: 'Saudi riyal' },
+  { code: 'JPY', symbol: '¥', name: 'Japanese yen' },
+  { code: 'ZAR', symbol: 'R', name: 'South African rand' },
+];
+
 /* --- Zoho Projects features a finding binds to ------------------------------
  * Only features confirmed in the API research. `tier` is the standalone gating. */
 
@@ -201,4 +219,4 @@ const SCENARIOS = [
   },
 ];
 
-module.exports = { INDUSTRIES, WEEK_PATTERNS, DAY_NAMES, ZOHO_FEATURES, SCENARIOS };
+module.exports = { INDUSTRIES, WEEK_PATTERNS, DAY_NAMES, CURRENCIES, ZOHO_FEATURES, SCENARIOS };
