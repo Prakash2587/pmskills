@@ -7,7 +7,7 @@
  * own prompt and report; this file supplies the route, the email gate, the
  * install and connect pop-ups and the print-ready report view.
  *
- *   PMLand.route(state, { title, text })        -> html of the guided route
+ *   PMLand.route(state, { title, text, promptTitle, promptNote, blocked })  -> html of the guided route
  *   PMLand.downloads(state, [{act, label}])     -> html of the gated download buttons
  *   PMLand.actions({ prompt(state), skillPage, zips, disabled(state) })  -> actions to merge into the tool's
  *   PMLand.openReport(html)                     -> shows a report on white paper with Save as PDF
@@ -23,17 +23,18 @@
   var GUIDE = A.zohoGuide || 'https://help.zoho.com/portal/en/kb/projects/settings-in-zoho-projects/developer-space/developer-space-folder/articles/zoho-projects-mcp';
   var CMDS = '/plugin marketplace add Prakash2587/pmskills\n/plugin install pmskills@pmskills';
 
-  function steps(s) {
+  function steps(s, cfg) {
     var out = [];
     if (s.landPath !== 'existing') out.push({ key: 'signup', act: 'try-zoho', btn: 'Try on Zoho Projects', title: 'Create your Zoho Projects portal', note: 'Your work stays saved here while you sign up.' });
     out.push({ key: 'install', act: 'install', btn: 'Install the skill', title: 'Add the skill to your AI agent', note: 'Claude, ChatGPT, Gemini and others. Type two lines inside Claude Code, or upload two small files.' });
     out.push({ key: 'connect', act: 'connect', btn: 'Connect Zoho Projects', title: 'Let the agent reach your portal', note: 'Switch on MCP access in Zoho Projects, then add its connector in your agent.' });
-    out.push({ key: 'prompt', act: 'copy-prompt', btn: 'Copy the hand-off prompt', title: 'Paste it into the agent', note: 'It shows you what it will create and waits for your yes.' });
+    out.push({ key: 'prompt', act: 'copy-prompt', btn: 'Copy the hand-off prompt', title: cfg.promptTitle || 'Paste it into the agent',
+      note: cfg.promptNote || 'It shows you what it will do and waits for your yes.' });
     return out;
   }
 
   function route(s, cfg) {
-    var done = s.landDone || {}, list = steps(s);
+    var done = s.landDone || {}, list = steps(s, cfg);
     var nextUp = list.filter(function (r) { return !done[r.key]; })[0];
     return '<section class="handoff"><span class="eyebrow">The quickest way</span><h3>' + esc(cfg.title || 'Hand it to your AI agent') + '</h3>' +
       '<p>' + esc(cfg.text) + '</p>' +

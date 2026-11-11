@@ -11,6 +11,7 @@ Three layers, and a new skill only writes the third:
 | Engine | `../engine.bundle.js` (built from `engine/` + `knowledge/`, under test) | Add the skill's engine module |
 | Look | `../ui.css`, `../ui.js` — colour tokens (light and dark), type, buttons, theme toggle, copy feedback | No |
 | Shell | `wizard.js`, `wizard.css` | No |
+| Land step | `land.js` — the hand-off route, email gate, install and connect pop-ups, print-ready report | No |
 | Steps | `../tools/<skill>.app.js` | Yes — this is the skill's tool |
 
 ## Adding a tool for a new skill

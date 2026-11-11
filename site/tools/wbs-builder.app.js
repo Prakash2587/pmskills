@@ -296,7 +296,8 @@
       '</div>' +
       plan.notes.map(function (n) { return '<p class="aside note-line">' + esc(n) + '</p>'; }).join('') +
 
-      Land.route(s, { text: 'Your agent creates this structure in your portal as a new project. It shows you what it is about to create, waits for your yes, and reports back what exists.', blocked: blocked }) +
+      Land.route(s, { text: 'Your agent creates this structure in your portal as a new project. It shows you what it is about to create, waits for your yes, and reports back what exists.',
+        promptNote: 'It shows you what it will create and waits for your yes.', blocked: blocked }) +
 
       '<h3 class="sec">More ways to use this structure</h3><div class="more">' +
         '<div class="more-row"><div><b>Download the structure</b><span class="note">The outline, the checks and the mapping, to keep or share.</span></div>' +

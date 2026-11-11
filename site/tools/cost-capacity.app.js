@@ -3,7 +3,8 @@
  *
  * This file is only the skill's STEPS. The chrome, navigation, saved session,
  * one-question-at-a-time flow, modal and drag-reorder come from
- * ../wizard/wizard.js, and every number comes from the tested engine in
+ * ../wizard/wizard.js, the hand-off route and report gate on the last step from
+ * ../wizard/land.js, and every number comes from the tested engine in
  * ../engine.bundle.js (PMEngine.planner). A new skill writes a file like this
  * one and reuses the other two unchanged.
  * ========================================================================== */
@@ -14,6 +15,7 @@
   var L = window.PMEngine.lead;
   var C = window.PMEngine.knowledge.catalog;
   var B = window.PMEngine.knowledge.benchmarks;
+  var Land = window.PMLand;
   var esc = window.PMWizard.esc;
 
   var JURISDICTIONS = {
@@ -30,7 +32,6 @@
     internal: 'Internal work — nobody is invoiced'
   };
   var HORIZONS = [4, 8, 12, 26];
-  var ZOHO_SIGNUP = 'https://www.zoho.com/projects/signup.html?servicename=ZohoProjects';
 
   /* ---------- state ---------- */
 
@@ -485,53 +486,15 @@
 
   /* ---------- 6. Land ---------- */
 
-  var ZOHO_MCP_GUIDE = 'https://help.zoho.com/portal/en/kb/projects/settings-in-zoho-projects/developer-space/developer-space-folder/articles/zoho-projects-mcp';
-  var INSTALL_CMDS = '/plugin marketplace add Prakash2587/pmskills\n/plugin install pmskills@pmskills';
-
-  // The route to a working setup. A new user has one step more than an existing one.
-  function landRoute(s) {
-    var route = [];
-    if (s.landPath !== 'existing') {
-      route.push({ key: 'signup', act: 'try-zoho', btn: 'Try on Zoho Projects', title: 'Create your Zoho Projects portal',
-        note: 'Your plan stays saved here while you sign up.' });
-    }
-    route.push({ key: 'install', act: 'install', btn: 'Install the skill', title: 'Add the skill to your AI agent',
-      note: 'Claude, ChatGPT, Gemini and others. Two commands, or two small uploads.' });
-    route.push({ key: 'connect', act: 'connect', btn: 'Connect Zoho Projects', title: 'Let the agent reach your portal',
-      note: 'Switch on MCP access in Zoho Projects, then add its connector in your agent.' });
-    route.push({ key: 'prompt', act: 'copy-prompt', btn: 'Copy the hand-off prompt', title: 'Paste your plan into the agent',
-      note: 'It checks the real numbers, then asks before each change.' });
-    return route;
-  }
-
   function renderLand(el, api) {
     var s = api.state, inp = inputOf(s), features = P.buildFeatureMap(inp, s.steps);
-    var route = landRoute(s), done = s.landDone || {};
-    var nextUp = route.filter(function (r) { return !done[r.key]; })[0];
-
-    var download = s.lead
-      ? '<div class="more-acts"><button class="btn small" data-act="report-pdf">PDF</button>' +
-          '<button class="btn small" data-act="export-md">Markdown</button><button class="btn small" data-act="export-csv">CSV</button>' +
-          '<div class="gate-msg">Unlocked for ' + esc(s.lead.email) + ' · <a data-act="lead-change">change</a></div></div>'
-      : '<div class="gate-form"><input type="email" id="lead-email" placeholder="you@yourcompany.com" autocomplete="email" aria-label="Work email" data-enter="unlock">' +
-          '<button class="btn small" data-act="unlock">Unlock</button>' +
-          '<div class="gate-msg" id="lead-err">PDF, Markdown or CSV. Company email only.</div></div>';
 
     el.innerHTML =
       '<h2 class="step-title">Put this plan to work</h2>' +
       '<p class="step-sub">So far it is an estimate from numbers you typed. In Zoho Projects it becomes measured.</p>' +
 
-      '<section class="handoff"><span class="eyebrow">The quickest way</span>' +
-        '<h3>Hand it to your AI agent</h3>' +
-        '<p>Your agent sets this plan up in Zoho Projects for you. It reads the real numbers first, shows where they differ from what you typed, and asks before every change.</p>' +
-        '<div class="seg">' +
-          '<button type="button" class="' + (s.landPath !== 'existing' ? 'on' : '') + '" data-act="land-path" data-k="new">I am new to Zoho Projects</button>' +
-          '<button type="button" class="' + (s.landPath === 'existing' ? 'on' : '') + '" data-act="land-path" data-k="existing">I already use it</button></div>' +
-        '<ol class="route">' + route.map(function (r, i) {
-          return '<li class="' + (done[r.key] ? 'done' : '') + '" data-route="' + r.key + '"><span class="route-n">' + (done[r.key] ? window.PMUI.tick : i + 1) + '</span>' +
-            '<div><b>' + esc(r.title) + '</b><span class="note">' + esc(r.note) + '</span></div>' +
-            '<button class="btn big' + (nextUp && nextUp.key === r.key ? ' primary' : '') + '" data-act="' + r.act + '">' + esc(r.btn) + '</button></li>';
-        }).join('') + '</ol></section>' +
+      Land.route(s, { text: 'Your agent sets this plan up in Zoho Projects for you. It reads the real numbers first, shows where they differ from what you typed, and asks before every change.',
+        promptTitle: 'Paste your plan into the agent', promptNote: 'It checks the real numbers, then asks before each change.' }) +
 
       '<h3 class="sec">Where each finding becomes a measured number</h3>' +
       '<div class="feature-list">' + features.map(function (f) {
@@ -543,7 +506,8 @@
 
       '<h3 class="sec">More ways to use this plan</h3>' +
       '<div class="more">' +
-        '<div class="more-row"><div><b>Download the report</b><span class="note">The plan, the checks and the setup, to keep or share.</span></div>' + download + '</div>' +
+        '<div class="more-row"><div><b>Download the report</b><span class="note">The plan, the checks and the setup, to keep or share.</span></div>' +
+          Land.downloads(s, [{ act: 'report-pdf', label: 'PDF' }, { act: 'export-md', label: 'Markdown' }, { act: 'export-csv', label: 'CSV' }]) + '</div>' +
         '<div class="more-row"><div><b>Set it up by hand</b><span class="note">The same plan as a short sequence to follow in Zoho Projects.</span></div>' +
           '<div class="more-acts"><button class="btn small" data-act="show-setup">View the steps</button></div></div>' +
         '<div class="more-row"><div><b>For developers</b><span class="note">The plan as Zoho Projects API data. Nothing is sent from this page.</span></div>' +
@@ -600,25 +564,6 @@
       }).join('') + '</ul>') +
 
       '<p class="r-foot">Built from self-reported figures. Nothing here is measured. Reported means a number that was typed in; derived means arithmetic on it.</p>';
-  }
-
-  function openReport(s) {
-    var view = document.getElementById('report-view');
-    if (!view) {
-      view = document.createElement('div');
-      view.id = 'report-view'; view.className = 'report-view';
-      document.body.appendChild(view);
-      view.addEventListener('click', function (ev) {
-        if (ev.target.closest('[data-report="print"]')) window.print();
-        else if (ev.target.closest('[data-report="close"]')) document.body.classList.remove('report-open');
-      });
-      document.addEventListener('keydown', function (ev) { if (ev.key === 'Escape') document.body.classList.remove('report-open'); });
-    }
-    view.innerHTML = '<div class="report-bar"><span>In the print window, choose <b style="color:#fff">Save as PDF</b> as the destination.</span>' +
-      '<div><button class="btn primary" data-report="print">Save as PDF</button><button class="btn" data-report="close">Close</button></div></div>' +
-      '<div class="report-sheet">' + reportHtml(s) + '</div>';
-    document.body.classList.add('report-open');
-    view.scrollTop = 0;
   }
 
   /* ---------- actions ---------- */
@@ -843,54 +788,6 @@
     'goto-plan': function (el, api) { api.go(3); },
 
     /* land */
-    'land-path': function (el, api) { api.set(function (s) { s.landPath = el.getAttribute('data-k'); }); },
-    'try-zoho': function (el, api) {
-      window.open(ZOHO_SIGNUP, '_blank', 'noopener');
-      api.set(function (s) { s.landDone = s.landDone || {}; s.landDone.signup = true; s.triedZoho = new Date().toISOString(); });
-      api.toast('Sign-up opened in a new tab. Your plan is saved here.');
-    },
-    install: function (el, api) {
-      api.set(function (s) { s.landDone = s.landDone || {}; s.landDone.install = true; });
-      api.modal('<h3>Install the skill</h3>' +
-        '<p>It runs inside your own AI subscription. One plugin carries the skill and the Zoho Projects layer it acts through.</p>' +
-        '<h4>Claude Code</h4><div class="code">' + esc(INSTALL_CMDS) + '</div>' +
-        '<div class="btn-row"><button class="btn primary" data-act="copy-text" data-text="' + esc(INSTALL_CMDS) + '">Copy both commands</button></div>' +
-        '<h4>Claude app · ChatGPT · Gemini · others</h4>' +
-        '<p style="margin-top:10px">Download both packages and upload each where your agent manages skills.</p>' +
-        '<div class="btn-row" style="margin-top:0"><a class="btn" href="../downloads/cost-capacity-optimization.zip" download>cost-capacity-optimization.zip</a>' +
-        '<a class="btn" href="../downloads/zoho-projects-api.zip" download>zoho-projects-api.zip</a></div>' +
-        '<div class="btn-row"><a class="btn ghost" href="../skills/cost-capacity-optimization.html#install" target="_blank" rel="noopener">Detailed steps for each agent →</a></div>');
-    },
-    connect: function (el, api) {
-      api.set(function (s) { s.landDone = s.landDone || {}; s.landDone.connect = true; });
-      api.modal('<h3>Connect Zoho Projects to your agent</h3>' +
-        '<p>The agent works through your own Zoho Projects sign-in. Nothing passes through this page.</p>' +
-        '<ol class="setup">' +
-          '<li><b>Turn on MCP Access in Zoho Projects</b>Portal Configuration → AI Hub → MCP Access.</li>' +
-          '<li><b>Turn on API Access</b>Developer Space → API Access &amp; Mobile Access → enable → Update.</li>' +
-          '<li><b>Add the Zoho Projects connector in your agent</b>Claude and Gemini list it under Connectors. ChatGPT, Cursor and VS Code take your portal\'s MCP server URL.</li>' +
-          '<li><b>Start a new chat with the connector switched on</b>Approve the Zoho sign-in when it asks.</li>' +
-        '</ol>' +
-        '<div class="btn-row" style="margin-top:0"><a class="btn primary" href="' + ZOHO_MCP_GUIDE + '" target="_blank" rel="noopener">Open Zoho\'s connection guide</a></div>' +
-        '<p style="margin-top:16px">If the agent cannot reach your portal, the skill walks you through these same steps before it does anything else.</p>');
-    },
-    'copy-text': function (el, api) {
-      window.PMUI.copy(el.getAttribute('data-text')).then(function () { window.PMUI.copied(el); },
-        function () { api.toast('Your browser blocked the copy — select the text and copy it by hand.'); });
-    },
-    'copy-prompt': function (el, api) {
-      window.PMUI.copy(P.buildAgentPrompt(inputOf(api.state), api.state.steps)).then(function () {
-        window.PMUI.copied(el);
-        // No re-render here: it would replace the button before it can show the tick.
-        api.patch(function (s) { s.landDone = s.landDone || {}; s.landDone.prompt = true; });
-        var li = el.closest('li');
-        if (li) { li.classList.add('done'); li.querySelector('.route-n').innerHTML = window.PMUI.tick; }
-      }, function () {
-        // The prompt is not on screen anywhere else, so show it to be copied by hand.
-        api.modal('<h3>Copy the hand-off prompt</h3><p>Your browser blocked the automatic copy. Select everything below and copy it.</p>' +
-          '<div class="payload-preview">' + esc(P.buildAgentPrompt(inputOf(api.state), api.state.steps)) + '</div>');
-      });
-    },
     'show-setup': function (el, api) {
       var setup = P.buildSetupSteps(inputOf(api.state), api.state.steps);
       api.modal('<h3>Set it up by hand</h3><p>Your plan as the configuration that makes it real. The rebalanced owners are already applied.</p>' +
@@ -905,22 +802,7 @@
         '<div class="btn-row" style="margin-top:0"><button class="btn small" data-act="copy-text" data-text="' + esc(payload) + '">Copy</button></div>' +
         '<div class="payload-preview">' + esc(payload) + '</div>');
     },
-    unlock: function (el, api) {
-      var box = document.getElementById('lead-email'), msg = document.getElementById('lead-err');
-      var res = L.checkWorkEmail(box ? box.value : '');
-      if (!res.ok) {
-        if (msg) { msg.textContent = res.reason; msg.classList.add('err'); }
-        if (box) box.focus();
-        return;
-      }
-      api.set(function (s) { s.lead = { email: res.email, domain: res.domain, at: new Date().toISOString() }; });
-    },
-    'lead-change': function (el, api) {
-      api.set(function (s) { s.lead = null; });
-      var box = document.getElementById('lead-email');
-      if (box) box.focus();
-    },
-    'report-pdf': function (el, api) { if (api.state.lead) openReport(api.state); },
+    'report-pdf': function (el, api) { if (api.state.lead) Land.openReport(reportHtml(api.state)); },
     'export-md': function (el, api) {
       if (!api.state.lead) return;
       api.download('capacity-plan-' + slug(api.state) + '.md', P.renderReport(inputOf(api.state), api.state.steps), 'text/markdown;charset=utf-8;');
@@ -946,6 +828,15 @@
         '<p style="margin-top:14px">The same shell runs every PM Skills tool; only the steps change per skill.</p>');
     }
   };
+
+  // The route, the install and connect pop-ups, the copy buttons and the email gate are shared by every tool.
+  var landActions = Land.actions({
+    prompt: function (s) { return P.buildAgentPrompt(inputOf(s), s.steps); },
+    skillPage: '../skills/cost-capacity-optimization.html',
+    zips: [{ href: '../downloads/cost-capacity-optimization.zip', label: 'cost-capacity-optimization.zip' },
+      { href: '../downloads/zoho-projects-api.zip', label: 'zoho-projects-api.zip' }]
+  });
+  Object.keys(landActions).forEach(function (k) { actions[k] = landActions[k]; });
 
   /* ---------- mount ---------- */
 
