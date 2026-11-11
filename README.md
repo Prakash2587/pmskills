@@ -6,12 +6,13 @@ out inside Zoho Projects** through the Zoho MCP or REST API.
 
 Neutral PM knowledge; Zoho Projects as the place you act on it.
 
-**Status:** 1 skill live, 1 reference layer, more planned. A skill is listed live only once it is built
+**Status:** 2 skills live, 1 reference layer, more planned. A skill is listed live only once it is built
 and tested.
 
 | Skill | What it does | Status |
 |---|---|---|
 | **cost-capacity-optimization** | Who is over- and under-loaded, what sustained overtime costs, billable ratio, budget variance — graded, with an action plan. | ✅ Live |
+| **wbs-builder** | Breaks a project into its work, checks the structure against sourced rules, and creates it in Zoho Projects as a new project. | ✅ Live |
 | **zoho-projects-api** | The shared implementation layer: the real Zoho Projects endpoints for reading project data and writing changes back, confirm-first. Other skills load it. | ✅ Live |
 | weekly-status-report · stale-task-chaser · scope-risk-digest · dependency/critical-path · estimate-accuracy · timesheet-gap · RAID log · sprint-health · Zoho setup | — | Planned |
 

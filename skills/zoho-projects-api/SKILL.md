@@ -3,7 +3,8 @@ name: zoho-projects-api
 description: >
   Reference layer for acting on Zoho Projects. Load this whenever another PM skill needs to READ
   real project data (budget, workload, timelogs, users) or WRITE a change back (reassign a task,
-  set a budget, add a dependency, post a comment, or set up a plan as projects and tasks). Also
+  set a budget, add a dependency, post a comment, set up a plan as projects and tasks, or create a
+  whole work breakdown structure as a new project). Also
   covers what to do when the portal is not connected yet. Teaches the correct endpoints, the two data
   planes (the user's Zoho MCP, or REST with OAuth), pagination, the write-confirmation protocol,
   and the limits that will otherwise bite.
@@ -59,7 +60,9 @@ change, dependency change or comment:
 1. State the exact change in plain language, with the specific records and values.
 2. Show the user what it will do.
 3. Act only on an explicit yes.
-4. Never batch more than 5 writes without re-confirming.
+4. Never batch more than 5 writes without re-confirming. The one exception is creating a brand-new
+   project's structure, where a single approval of the previewed whole is enough (see "Creating a
+   work breakdown structure").
 5. **Never write a cost or billing rate**, and never write a change to someone's allocation that the
    user has not seen as a specific instruction.
 
@@ -97,8 +100,10 @@ This is budget variance for free — no derivation, no EVM needed.
 ### Allocation / workload
 `GET /api/v3/portal/{portal}/reports/workload?from_date=&to_date=&time_period=weeks&report_based_on=users`
 
-Returns, per person, `overall_allocation` (`under` / `optimal` / `over`), `total_availability`,
-`total_work`, per-day `total_date_work[]`, plus the portal's `business_hours` and `holidays`.
+Dates are `yyyyMMdd` with no separators (for example `20261115`); other formats are refused.
+Returns `owners[]`, each with `work.overall_allocation`, `work.total_availability`, `work.total_work`
+and per-day `total_date_work[]`, plus the portal's `business_hours` and holidays. Besides `under`,
+`optimal` and `over`, a person with nothing assigned comes back as `free`.
 **Use `overall_allocation` directly** — it is Zoho's own verdict against that portal's real calendar,
 which is what makes an under/over finding defensible rather than modelled.
 (Scope for this report is not separately documented — verify it works with the token you have.)
@@ -187,6 +192,54 @@ most confusing to find later.
 If a create call is refused, report the refusal and stop that step. Never retry with different
 values to make it go through.
 
+### Creating a work breakdown structure
+
+For a structure handed over by the wbs-builder skill or the PM Skills WBS builder. The data lists a
+project, phases (if any), task lists, tasks with their parents, and dependencies, already in the order
+to create them. Everything here was observed on a live portal.
+
+**One approval covers the whole structure.** The target is always a new project, so nothing existing
+can be harmed. Show the counts, wait for a yes, then create in this order and **stop at the first
+failure**:
+
+1. **Project** — `POST /api/v3/portal/{portal}/projects` with `name`. Add `is_rollup_project: true`
+   only if the user asked for roll-up; it cannot be turned off later.
+2. **Phases** — `POST /api/v3.1/portal/{portal}/projects/{project_id}/phases` with `name`. A phase
+   sent without dates is given the creation date as both its start and its end. Tell the user.
+3. **Task lists** — `POST /api/v3/portal/{portal}/projects/{project_id}/tasklists` with `name`, and
+   `milestone: {id}` to place it under a phase.
+4. **Tasks, then subtasks, one level at a time** — `POST .../projects/{project_id}/tasks` with `name`
+   and `tasklist: {id}`. A subtask is the same call with `parental_info: {parent_task_id}`; its
+   parent must already exist. At most **six levels of subtask**; a seventh is refused. Tasks keep
+   the order they are created in. Where the route offers it, `POST .../bulk-tasks` takes up to 100
+   tasks per call; if any item is invalid the whole call is refused and nothing is created.
+5. **Dependencies** — `POST .../projects/{project_id}/tasks/dependency` with `predecessor_task: {id}`,
+   `successor_task: {id}` and `dependency_type: "FS"`. One call per link. If your connection has no
+   dependency action, do not improvise: list the links for the user to add by hand.
+
+**Estimates.** Store the planned effort on the task:
+`owners_and_work: {work_type: "standard", unit: "hours", copy_task_duration: false, owners: [{zpuid, work_values: "HH:MM"}]}`.
+For a task with no owner, use the id of "Unassigned User", which is returned in the owners of any
+unassigned task you create. Hours must be `"24:00"`, not `"24"`. In a roll-up project, set hours on
+the lowest-level tasks only; hours on a parent are refused.
+
+**Owners.** Assign a task only to a confirmed user who is a member of the project. Read the project's
+users first. Anyone else stays in the task's description as the intended owner. Never add or invite a
+user.
+
+**Read every reply, not just its status.** A dependency that would close a loop comes back with a
+success status and `"ERROR": true` in the body. Treat that as a failure.
+
+**Pace yourself.** An endpoint accepts 200 calls in two minutes, then blocks for ten. Creating tasks
+one at a time, leave a short gap between calls once you pass a hundred.
+
+**When something fails,** stop, read the project back, and tell the user exactly what exists. Do not
+retry with altered values. There is no undo; the clean-up is `POST .../projects/{project_id}/trash`,
+on the user's say-so.
+
+**When it succeeds,** read the project back and report the counts against what was asked for, plus
+every task left unassigned and why.
+
 ### Snapshot the budget (the trend workaround)
 Zoho stores no historical cost baseline. To build one, read `budget_info` on a schedule and persist it
 yourself, keyed by date. From the first run forward you own a real planned/actual curve. This is a
@@ -204,6 +257,7 @@ read plus your own storage — it writes nothing to Zoho.
 | Record the assessment for the team | post a comment to the project feed (confirm) |
 | Start a cost baseline | schedule a recurring `budget_info` read into your own store |
 | Set up a plan from the planner | match people → check the calendar → create projects → create tasks (≤5 per batch, confirm each) |
+| Create a work breakdown structure | one approval → project → phases → task lists → tasks by level → dependencies → read back |
 
 ## What you must never do
 

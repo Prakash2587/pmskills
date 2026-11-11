@@ -1,9 +1,12 @@
 # Installing the skills
 
-There are two skills, and they travel together:
+Each skill travels with one shared layer:
 
-- `cost-capacity-optimization` — the judgement: what to assess and what to change.
-- `zoho-projects-api` — the layer it acts through: how to read and write Zoho Projects, confirm-first.
+- `cost-capacity-optimization` — who is over capacity, what the week costs, what to change.
+- `wbs-builder` — breaks a project into its work and creates it in Zoho Projects as a new project.
+- `zoho-projects-api` — the layer both act through: how to read and write Zoho Projects.
+
+Install the skill you want plus `zoho-projects-api`. The Claude Code plugin brings all three.
 
 Each is a folder holding one `SKILL.md` (the open Agent Skills format), so any agent that reads that
 format can load them. Setup is the same three steps everywhere: **add the skills, connect Zoho
@@ -22,13 +25,14 @@ Projects, ask.**
 /plugin install pmskills@pmskills
 ```
 
-One plugin carries both skills.
+One plugin carries every skill. Type the two lines at the Claude Code prompt, not in a terminal.
 
 ### Claude app (web or desktop)
 
 Download both packages and upload each one under **Customize → Skills**:
 
 - [`cost-capacity-optimization.zip`](../site/downloads/cost-capacity-optimization.zip)
+- [`wbs-builder.zip`](../site/downloads/wbs-builder.zip)
 - [`zoho-projects-api.zip`](../site/downloads/zoho-projects-api.zip)
 
 Each zip holds a folder named after the skill with `SKILL.md` inside, which is the layout the upload

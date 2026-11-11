@@ -157,62 +157,12 @@
 </div>
 
 <script>
-(function () {
-  'use strict';
-
-  var A = window.PMAgents;
-  var agent = A.chosen() || A.list[0];
-  function $(id) { return document.getElementById(id); }
-  function esc(s) {
-    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
-      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
-    });
-  }
-
-  var ZIPS = '<div class="dl"><a class="btn" href="../downloads/cost-capacity-optimization.zip" download>cost-capacity-optimization.zip</a>' +
-    '<a class="btn" href="../downloads/zoho-projects-api.zip" download>zoho-projects-api.zip</a></div>';
-
-  function render() {
-    $('agent-tabs').innerHTML = A.tabs(agent.id);
-    $('agent-name').textContent = agent.name;
-
-    $('need').innerHTML = '<ul>' +
-      '<li><b>' + agent.name + '</b>, on a plan that allows custom skills and connectors.' + (agent.uploadNote ? ' ' + esc(agent.uploadNote) : '') + '</li>' +
-      '<li><b>A Zoho Projects portal</b> where you can change settings. <a href="' + A.signup + '" target="_blank" rel="noopener">Create one</a> if you are new.</li>' +
-      '<li><b>Zoho Projects Premium</b> for budget and workload figures, <b>Enterprise</b> for workload across projects. On a lower plan the skill still works, and says what it cannot measure.</li></ul>';
-
-    $('step-add').innerHTML =
-      '<p>There are two, and they travel together: <b>cost-capacity-optimization</b> decides what to assess and what to change; <b>zoho-projects-api</b> is how it reads and writes your portal.</p>' +
-      (agent.plugin
-        ? '<h3>' + agent.pluginWhere + '</h3><p>Run these two commands. One plugin carries both skills.</p><pre>' + esc(agent.plugin) + '</pre>' +
-          '<div class="dl"><button class="btn" data-copy="' + esc(agent.plugin) + '">Copy both commands</button></div><h3>Claude app</h3>'
-        : '') +
-      '<p>Download both packages.</p>' + ZIPS + '<p>' + esc(agent.upload) + '</p>' +
-      '<div class="check"><b>Check</b><span>Both skills appear in ' + agent.name + '\'s list of skills.</span></div>';
-
-    $('step-connect').innerHTML =
-      '<p>The skill works through your own Zoho Projects sign-in. Nothing passes through this site.</p>' +
-      '<ol><li><b>Sign in to Zoho Projects</b> as someone who can change portal settings.</li>' +
-      '<li><b>Turn on MCP Access:</b> Portal Configuration → AI Hub → MCP Access.</li>' +
-      '<li><b>Turn on API Access:</b> Developer Space → API Access &amp; Mobile Access → enable → Update.</li>' +
-      '<li><b>Add the connector in ' + agent.name + ':</b></li></ol>' +
-      '<div class="path">' + esc(agent.connect) + '</div>' +
-      (agent.connectNote ? '<p class="fine">' + esc(agent.connectNote) + '</p>' : '') +
-      '<p>Approve the Zoho sign-in when it asks, then start a new chat with the connector switched on.</p>' +
-      '<div class="check"><b>Check</b><span>Ask “List my Zoho Projects projects.” It should name your real projects.</span></div>' +
-      '<p class="fine">Menu names change between versions. If a step does not match what you see, follow <a href="' + A.zohoGuide + '" target="_blank" rel="noopener">Zoho\'s connection guide</a>.</p>';
-  }
-
-  document.addEventListener('click', function (ev) {
-    var tab = ev.target.closest('[data-agent]');
-    if (tab) { agent = A.choose(tab.getAttribute('data-agent')) || agent; render(); return; }
-    var c = ev.target.closest('[data-copy]');
-    if (c) window.PMUI.copy(c.getAttribute('data-copy')).then(function () { window.PMUI.copied(c); }, function () {});
-  });
-
-  $('theme-slot').innerHTML = window.PMUI.themeToggle();
-  render();
-})();
+window.SKILL = {
+  pair: 'There are two, and they travel together: <b>cost-capacity-optimization</b> decides what to assess and what to change; <b>zoho-projects-api</b> is how it reads and writes your portal.',
+  zips: ['cost-capacity-optimization', 'zoho-projects-api'],
+  planNote: '<b>Zoho Projects Premium</b> for budget and workload figures, <b>Enterprise</b> for workload across projects. On a lower plan the skill still works, and says what it cannot measure.'
+};
 </script>
+<script src="skill-page.js?v=c792edf8"></script>
 </body>
 </html>

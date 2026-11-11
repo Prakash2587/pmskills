@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WBS builder — install and set up — Zoho Projects</title>
+<meta name="description" content="Install the WBS builder skill in Claude, ChatGPT, Gemini, Cursor or Copilot, connect Zoho Projects, and create a work breakdown structure as a new project.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../ui.css?v=30a1f08e">
+<script src="../ui.js?v=864cc105"></script>
+<script src="../agents.js?v=2b16a12b"></script>
+<link rel="stylesheet" href="../site.css?v=c6fd6ceb">
+</head>
+<body>
+<div class="wrap">
+
+<div class="top">
+  <a class="mark" href="../index.html"><i>PM</i>Zoho Projects</a>
+  <nav>
+    <a class="link" href="../index.html#skills">Skills</a>
+    <a class="link" href="../index.html#how">How it works</a>
+    <a class="link" href="../index.html#install">Install</a>
+    <a class="link" href="https://github.com/Prakash2587/pmskills" target="_blank" rel="noopener">GitHub</a>
+    <span id="theme-slot"></span>
+  </nav>
+</div>
+
+<div class="crumb"><a href="../index.html#skills">&larr; All skills</a></div>
+
+<header class="page-head">
+  <div class="meta"><span class="eyebrow">Skill · Scope</span><span class="st live">Live</span></div>
+  <h1>WBS builder</h1>
+  <p class="lede">Breaks a project down into everything it has to produce, checks the structure, and creates it in Zoho Projects as a new project — after showing you exactly what it is about to create.</p>
+  <div class="cta">
+    <a class="btn primary big" href="../tools/wbs-builder.html" target="_blank" rel="noopener">Try the builder</a>
+    <a class="btn big" href="https://github.com/Prakash2587/pmskills/tree/main/skills/wbs-builder" target="_blank" rel="noopener">View on GitHub</a>
+  </div>
+</header>
+
+<div class="sticky-tabs">
+  <span>Steps for <b id="agent-name">Claude</b></span>
+  <div class="filters" id="agent-tabs"></div>
+</div>
+
+<section class="doc" style="border-top:none">
+  <div><span class="no">Before you start</span><h2>What you need</h2></div>
+  <div class="body" id="need"></div>
+</section>
+
+<section class="doc" id="install">
+  <div><span class="no">Step 01</span><h2>Add the two skills</h2></div>
+  <div class="body" id="step-add"></div>
+</section>
+
+<section class="doc">
+  <div><span class="no">Step 02</span><h2>Connect Zoho Projects</h2></div>
+  <div class="body" id="step-connect"></div>
+</section>
+
+<section class="doc">
+  <div><span class="no">Step 03</span><h2>Use it</h2></div>
+  <div class="body">
+    <h3>Bring a structure from the builder</h3>
+    <ol>
+      <li>Build your structure in the <a href="../tools/wbs-builder.html" target="_blank" rel="noopener">WBS builder</a> and finish its checks.</li>
+      <li>On its last step, choose how it should map, then press <b>Copy the hand-off prompt</b>.</li>
+      <li>Paste it into your agent.</li>
+    </ol>
+    <p>The agent shows you a summary of what it is about to create — how many phases, task lists, tasks and subtasks — and waits for one yes. It then creates a new project in stages and reports back what exists.</p>
+
+    <h3>Or start from a description</h3>
+    <p>Start a new chat with the Zoho Projects connector switched on, and describe the project in your own words. For example:</p>
+    <div class="path">Break down a warehouse fit-out into a work breakdown structure. We report by building element.</div>
+    <div class="path">Build a WBS for rolling out a new CRM to three regional offices, then create it in Zoho Projects.</div>
+    <p>It asks how the project is governed before choosing a top level, proposes a numbered structure, checks it with you, and creates it only when you say so.</p>
+  </div>
+</section>
+
+<section class="doc">
+  <div><span class="no">Safeguards</span><h2>What it will and will not do</h2></div>
+  <div class="body">
+    <ul>
+      <li><b>Always a new project.</b> It never adds a structure into a project that already exists.</li>
+      <li><b>One approval for the whole structure</b>, after showing you the counts. It stops at the first failure and tells you what exists.</li>
+      <li><b>Never assigns work to a role.</b> Zoho Projects cannot; a task is assigned only when you name a real user of your portal, and is left unassigned otherwise.</li>
+      <li><b>Never invites people.</b></li>
+      <li><b>Never invents an estimate as fact.</b> Any figure it supplies is marked as a sample until you confirm it.</li>
+      <li><b>Never judges completeness for you.</b> Whether each branch holds everything it should is yours to confirm.</li>
+      <li><b>No dates.</b> A WBS says what the work is, not when it happens.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="doc" id="sources">
+  <div><span class="no">Basis</span><h2>Where its rules come from</h2></div>
+  <div class="body">
+    <p>Each check was traced to a published source before this skill went live, and what Zoho Projects can create was tested on a live portal. A rule that could not be traced was left out or is shown as a rule of thumb.</p>
+    <table>
+      <thead><tr><th>What the skill does</th><th>Where it comes from</th></tr></thead>
+      <tbody>
+        <tr><td>Asks you to confirm that each branch holds all of its work and nothing else</td><td>GAO Cost Estimating and Assessment Guide; US DOE WBS Handbook (the “100% rule”)</td></tr>
+        <tr><td>Keeps project management as its own branch</td><td>GAO; NASA WBS Handbook</td></tr>
+        <tr><td>Expects at least three levels</td><td>GAO; US DOE</td></tr>
+        <tr><td>Gives each work package one accountable role</td><td>GAO</td></tr>
+        <tr><td>Asks what “done” means for each work package</td><td>GAO; NASA (the WBS dictionary)</td></tr>
+        <tr><td>Keeps dependencies beside the structure, not in it</td><td>GAO</td></tr>
+        <tr><td>Bases the construction template on building elements</td><td>NIST, UNIFORMAT II (NISTIR 6389)</td></tr>
+        <tr><td>Bases the software rollout template on published structures</td><td>NASA’s information-technology WBS; the US defence business-systems WBS as reprinted by GAO</td></tr>
+        <tr><td>Allows either deliverables or stages at the top level</td><td>US government guidance prefers deliverables; PMI’s guide (2000 edition) and APM allow others</td></tr>
+        <tr><td>Six levels of subtask, estimates on unassigned tasks, refusal of dependency loops</td><td>Tested on a live Zoho Projects portal, November 2026</td></tr>
+      </tbody>
+    </table>
+    <h3 style="margin-top:30px">What it leaves out, and why</h3>
+    <ul>
+      <li><b>The “8 to 80 hours” rule.</b> It appears in no standard that could be read, and ANSI/EIA-748 says work-package size varies with the project. You can set your own limit instead.</li>
+      <li><b>“A WBS must be nouns only.”</b> Working schedulers dispute it.</li>
+      <li><b>A fixed maximum depth.</b> No standard sets one; go as deep as you need to manage the work.</li>
+    </ul>
+    <p class="fine">This is independent work, not affiliated with or endorsed by GAO, NASA, the US DOE, APM, NIST or PMI. PMI’s Practice Standard for Work Breakdown Structures, the current PMI guide and ISO 21511 are paid documents that were not read, so nothing here is attributed to them. The research notes are in the repository’s <a href="https://github.com/Prakash2587/pmskills/tree/main/research/wbs" target="_blank" rel="noopener">research folder</a>.</p>
+  </div>
+</section>
+
+<section class="doc">
+  <div><span class="no">Troubleshooting</span><h2>If something goes wrong</h2></div>
+  <div class="body">
+    <table>
+      <thead><tr><th>What you see</th><th>What to do</th></tr></thead>
+      <tbody>
+        <tr><td>The agent says it cannot reach Zoho Projects</td><td>Repeat step 02, then start a <b>new</b> chat with the connector switched on.</td></tr>
+        <tr><td>It starts redesigning a structure you pasted</td><td>Tell it: “Create it as built. Do not change the structure.”</td></tr>
+        <tr><td>It stops part-way through</td><td>It will say what exists. Fix the cause and ask it to continue, or have it move the new project to trash and start again.</td></tr>
+        <tr><td>Every phase has today’s date</td><td>Expected. Zoho Projects dates a phase on the day it is created when none is given. Set the real dates in Zoho Projects.</td></tr>
+        <tr><td>Tasks are unassigned</td><td>The person named for that role is not a confirmed user of your portal, or not a member of the new project. Add them in Zoho Projects, then assign.</td></tr>
+        <tr><td>Dependencies were not created</td><td>Your connection may have no dependency action. The agent lists them for you to add by hand.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="doc">
+  <div><span class="no">Source</span><h2>Read the skill</h2></div>
+  <div class="body">
+    <p>Both files are plain text. Read them before you install them.</p>
+    <div class="dl">
+      <a class="btn" href="wbs-builder/SKILL.md">wbs-builder/SKILL.md</a>
+      <a class="btn" href="zoho-projects-api/SKILL.md">zoho-projects-api/SKILL.md</a>
+    </div>
+    <p class="fine">Open source, MIT licensed · <a href="https://github.com/Prakash2587/pmskills" target="_blank" rel="noopener">github.com/Prakash2587/pmskills</a></p>
+  </div>
+</section>
+
+<footer>
+  <span>PM Skills for Zoho Projects · open source, MIT licensed</span>
+  <a href="../index.html#skills">All skills</a>
+</footer>
+</div>
+
+<script>
+window.SKILL = {
+  pair: 'There are two, and they travel together: <b>wbs-builder</b> decides how the project is broken down; <b>zoho-projects-api</b> is how the structure is created in your portal.',
+  zips: ['wbs-builder', 'zoho-projects-api'],
+  planNote: '<b>Any Zoho Projects plan</b> can hold the structure. The Free plan allows three projects. Roll-up of hours to parents needs <b>Premium</b> or above.'
+};
+</script>
+<script src="skill-page.js?v=c792edf8"></script>
+</body>
+</html>

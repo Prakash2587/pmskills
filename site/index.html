@@ -73,7 +73,7 @@
 <section id="skills">
   <div class="sec-head">
     <div><span class="eyebrow">Skill gallery</span><h2>Everything you need to manage your projects</h2>
-      <p>A skill goes live only after it is checked against published standards: PMI, AACE International, APM and ISO 21502.</p></div>
+      <p>A skill goes live only after it is checked against published standards and guidance. Each live skill names the ones it was checked against.</p></div>
     <div class="filters" id="filters">
       <button class="on" data-f="all">All</button>
       <button data-f="live">Live</button>
@@ -121,6 +121,14 @@
       basis: 'Checked against PMI · AACE · APM · ISO 21502',
       tool: 'tools/cost-capacity.html', toolLabel: 'Try the planner', page: 'skills/cost-capacity-optimization.html',
       file: 'skills/cost-capacity-optimization/SKILL.md' },
+    { id: 'wbs-builder', cat: 'Scope', status: 'live', title: 'WBS builder',
+      short: 'Breaks a project into everything it has to produce, checks the structure, and creates it in Zoho Projects as a new project.',
+      long: 'Starts from a sourced template or your own description, numbers the structure, adds hours up the tree, and checks it: blockers that would break in Zoho Projects, warnings you acknowledge, and completeness that only you can confirm. Then it creates the whole structure in one go.',
+      why: 'Missing scope that surfaces late, and structures that do not survive the move into a tool, are the most repeated WBS complaints we found.',
+      uses: ['Phases', 'Task lists', 'Tasks and subtasks', 'Task dependencies'],
+      basis: 'Checked against GAO · NASA · US DOE · APM',
+      tool: 'tools/wbs-builder.html', toolLabel: 'Try the builder', page: 'skills/wbs-builder.html',
+      file: 'skills/wbs-builder/SKILL.md' },
     { id: 'weekly-status', cat: 'Reporting', status: 'next', title: 'Weekly status report',
       short: 'Turns raw project state into a RAG update shaped for whoever reads it.',
       long: 'Classifies each task as shipped, in flight, slipped or blocked, writes the update for its audience, and posts it to the project feed on approval.',

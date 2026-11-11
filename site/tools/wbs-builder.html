@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WBS Builder — PM Skills</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../ui.css?v=30a1f08e">
+<link rel="stylesheet" href="../wizard/wizard.css?v=d3d79bc6">
+<script src="../ui.js?v=864cc105"></script>
+<script src="../agents.js?v=2b16a12b"></script>
+<style>
+  .crumb { max-width: 1060px; margin: 0 auto; padding: 16px 20px 0; font: 400 11.5px var(--mono); }
+  .crumb a { color: var(--faint); }
+</style>
+</head>
+<body>
+<div class="crumb"><a href="../index.html">&larr; All skills</a></div>
+<div id="root"></div>
+
+<!-- 1. the tested engine  2. the shared wizard shell  3. the shared Land step  4. this skill's steps -->
+<script src="../engine.bundle.js?v=f0744c89"></script>
+<script src="../wizard/wizard.js?v=1de9f302"></script>
+<script src="../wizard/land.js?v=13ad0365"></script>
+<script src="wbs-builder.app.js?v=2f4fb5e7"></script>
+</body>
+</html>

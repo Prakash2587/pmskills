@@ -1,6 +1,8 @@
 {
   "name": "pmskills",
-  "version": "0.1.0",
-  "description": "Cost & capacity optimization, plus the Zoho Projects API reference layer it acts through.",
-  "author": { "name": "Prakash" }
+  "version": "0.2.0",
+  "description": "Cost & capacity optimization and the WBS builder, plus the Zoho Projects layer they act through.",
+  "author": {
+    "name": "Prakash"
+  }
 }
